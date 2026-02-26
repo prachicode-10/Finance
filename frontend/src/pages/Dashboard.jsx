@@ -3,10 +3,10 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recha
 import { MOCK_STOCKS, USER_PORTFOLIOS } from '../data/mockData';
 import { AIService } from '../services/aiService';
 
-const Dashboard = ({ user }) => {
+const Dashboard = ({ user, portfolio, onNavigate }) => {
     const sentiment = AIService.getSentimentAnalysis();
 
-    // Determine which portfolio to show based on the logged-in user
+    // Determine user name for lookups
     const username = user?.username || user || 'Default';
 
     // Virtual Portfolio Generator (ensures EVERY name gets unique values)
@@ -26,13 +26,22 @@ const Dashboard = ({ user }) => {
         };
     };
 
-    const userPortfolio = USER_PORTFOLIOS[username] || getDynamicPortfolio(username, user?.role);
+    // If parent passed a live portfolio state, prefer that, otherwise fall back to global map
+    const userPortfolio = portfolio || USER_PORTFOLIOS[username] || getDynamicPortfolio(username, user?.role);
 
     return (
         <div className="dashboard-view">
             <header style={{ marginBottom: '2.5rem' }}>
                 <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Market Overview</h1>
                 <p style={{ color: 'var(--text-muted)' }}>Welcome back, here's what's happening today.</p>
+                {user?.id && (
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>User ID: {user.id}</div>
+                )}
+                {portfolio && (
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                        Activity: {portfolio.recentTransactions.length > 5 ? 'High' : portfolio.recentTransactions.length > 0 ? 'Moderate' : 'Low'}
+                    </div>
+                )}
             </header>
 
             <div className="stat-grid">
@@ -71,6 +80,14 @@ const Dashboard = ({ user }) => {
                     </span>
                 </div>
             </div>
+
+            {onNavigate && (
+                <div style={{ margin: '1.5rem 0' }}>
+                    <button className="btn-outline" onClick={() => onNavigate('portfolio')}>
+                        View Full Portfolio Details
+                    </button>
+                </div>
+            )}
 
             {user?.tasks && user.tasks.length > 0 && (
                 <div className="glass-card" style={{ marginTop: '1.5rem', padding: '1.5rem' }}>

@@ -376,3 +376,26 @@ export const USER_PORTFOLIOS = {
     ]
   }
 };
+
+export const USER_PORTFOLIO_STATS = [
+  { "id": 1, "username": "user01", "invested_money": 20000, "spent_on_stocks": 15000, "performance": "positive", "gains_loss": 1800, "assets_allocations": { "stocks": 60, "bonds": 20, "cash": 10, "crypto": 10 } },
+  { "id": 2, "username": "user02", "invested_money": 12000, "spent_on_stocks": 9000, "performance": "negative", "gains_loss": -600, "assets_allocations": { "stocks": 50, "bonds": 30, "cash": 20 } },
+  { "id": 3, "username": "user03", "invested_money": 25000, "spent_on_stocks": 20000, "performance": "positive", "gains_loss": 3200, "assets_allocations": { "stocks": 70, "mutual_funds": 15, "cash": 10, "crypto": 5 } },
+  { "id": 4, "username": "user04", "invested_money": 8000, "spent_on_stocks": 6000, "performance": "negative", "gains_loss": -400, "assets_allocations": { "stocks": 40, "bonds": 40, "cash": 20 } },
+  { "id": 5, "username": "user05", "invested_money": 15000, "spent_on_stocks": 12000, "performance": "positive", "gains_loss": 950, "assets_allocations": { "stocks": 55, "bonds": 25, "crypto": 10, "cash": 10 } },
+  { "id": 6, "username": "user06", "invested_money": 30000, "spent_on_stocks": 25000, "performance": "positive", "gains_loss": 4100, "assets_allocations": { "stocks": 65, "mutual_funds": 20, "real_estate": 10, "cash": 5 } },
+  { "id": 7, "username": "user07", "invested_money": 10000, "spent_on_stocks": 7000, "performance": "negative", "gains_loss": -500, "assets_allocations": { "stocks": 45, "bonds": 35, "cash": 20 } },
+  { "id": 8, "username": "user08", "invested_money": 18000, "spent_on_stocks": 14000, "performance": "positive", "gains_loss": 1600, "assets_allocations": { "stocks": 60, "mutual_funds": 20, "crypto": 10, "cash": 10 } },
+  { "id": 9, "username": "user09", "invested_money": 9500, "spent_on_stocks": 8000, "performance": "negative", "gains_loss": -700, "assets_allocations": { "stocks": 50, "bonds": 30, "cash": 20 } },
+  { "id": 10, "username": "user10", "invested_money": 26000, "spent_on_stocks": 21000, "performance": "positive", "gains_loss": 3500, "assets_allocations": { "stocks": 70, "mutual_funds": 15, "real_estate": 10, "cash": 5 } },
+  { "id": 11, "username": "user11", "invested_money": 11000, "spent_on_stocks": 9000, "performance": "positive", "gains_loss": 800, "assets_allocations": { "stocks": 55, "bonds": 25, "cash": 20 } },
+  { "id": 12, "username": "user12", "invested_money": 6000, "spent_on_stocks": 5000, "performance": "negative", "gains_loss": -350, "assets_allocations": { "stocks": 40, "bonds": 40, "cash": 20 } },
+  { "id": 13, "username": "user13", "invested_money": 20000, "spent_on_stocks": 16000, "performance": "positive", "gains_loss": 2700, "assets_allocations": { "stocks": 65, "mutual_funds": 20, "crypto": 10, "cash": 5 } },
+  { "id": 14, "username": "user14", "invested_money": 7500, "spent_on_stocks": 6000, "performance": "negative", "gains_loss": -400, "assets_allocations": { "stocks": 45, "bonds": 35, "cash": 20 } },
+  { "id": 15, "username": "user15", "invested_money": 14000, "spent_on_stocks": 11000, "performance": "positive", "gains_loss": 1200, "assets_allocations": { "stocks": 55, "mutual_funds": 25, "cash": 20 } },
+  { "id": 16, "username": "user16", "invested_money": 27000, "spent_on_stocks": 22000, "performance": "positive", "gains_loss": 3900, "assets_allocations": { "stocks": 70, "real_estate": 15, "mutual_funds": 10, "cash": 5 } },
+  { "id": 17, "username": "user17", "invested_money": 9000, "spent_on_stocks": 7000, "performance": "negative", "gains_loss": -550, "assets_allocations": { "stocks": 50, "bonds": 30, "cash": 20 } },
+  { "id": 18, "username": "user18", "invested_money": 16000, "spent_on_stocks": 13000, "performance": "positive", "gains_loss": 1750, "assets_allocations": { "stocks": 60, "mutual_funds": 20, "crypto": 10, "cash": 10 } },
+  { "id": 19, "username": "user19", "invested_money": 13000, "spent_on_stocks": 10000, "performance": "negative", "gains_loss": -700, "assets_allocations": { "stocks": 50, "bonds": 30, "cash": 20 } },
+  { "id": 20, "username": "user20", "invested_money": 21000, "spent_on_stocks": 17000, "performance": "positive", "gains_loss": 3100, "assets_allocations": { "stocks": 65, "mutual_funds": 20, "real_estate": 10, "cash": 5 } }
+];

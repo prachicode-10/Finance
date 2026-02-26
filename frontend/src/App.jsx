@@ -10,16 +10,39 @@ import AIFinancialAdvisor from './pages/AIFinancialAdvisor';
 import LandingPage from './pages/LandingPage';
 
 import Auth from './pages/Auth';
+import { USER_PORTFOLIOS } from './data/mockData';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [authState, setAuthState] = useState('landing'); // 'landing', 'auth', 'authenticated'
   const [user, setUser] = useState(null);
+  const [portfolio, setPortfolio] = useState(null);
+
+  // utility for deriving an initial portfolio from the mock data
+  const initializePortfolio = (userObj) => {
+    if (!userObj) return null;
+    const username = userObj.username || userObj;
+    let base = USER_PORTFOLIOS[username];
+    if (!base) {
+      // fallback recreation of dynamic portfolio from Dashboard logic
+      const hash = username.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      const baseline = USER_PORTFOLIOS[userObj.role] || USER_PORTFOLIOS['Default'];
+      const balanceVariance = (hash * 137) % 15000;
+      const pnlVariance = ((hash * 7) % 80) / 10 - 4;
+      base = {
+        ...baseline,
+        totalBalance: baseline.totalBalance + balanceVariance,
+        pnlPercentage: Number((baseline.pnlPercentage + pnlVariance).toFixed(1)),
+      };
+    }
+    setPortfolio(base);
+    return base;
+  };
 
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <Dashboard user={user} />;
+        return <Dashboard user={user} portfolio={portfolio} onNavigate={setActiveTab} />;
       case 'learning':
         return <LearningCenter />;
       case 'prediction':
@@ -27,7 +50,7 @@ function App() {
       case 'news':
         return <MarketSentiment />;
       case 'portfolio':
-        return <PortfolioAnalyzer />;
+        return <PortfolioAnalyzer user={user} portfolio={portfolio} setPortfolio={setPortfolio} />;
       case 'advisor':
         return <AIFinancialAdvisor />;
       default:
@@ -44,6 +67,7 @@ function App() {
       <Auth
         onLogin={(userObj) => {
           setUser(userObj);
+          initializePortfolio(userObj);
           setAuthState('authenticated');
         }}
       />
@@ -58,6 +82,8 @@ function App() {
         onLogout={() => {
           setAuthState('landing');
           setActiveTab('dashboard');
+          setPortfolio(null);
+          setUser(null);
         }}
       />
       <main className="main-content">

@@ -8,33 +8,31 @@ const Auth = ({ onLogin }) => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
-        // Universal "Soft" Login: Accept anything if fields are provided
         if (name && password) {
-            const existingUser = USER_ACCOUNTS.find(
-                u => (u.username === name || u.email === name) && u.password === password
-            );
-
-            if (existingUser) {
-                // Known user from dataset
-                onLogin(existingUser);
-            } else {
-                // Virtual user: Allow any name for demo purposes
-                onLogin({
-                    username: name,
-                    role: name.toLowerCase().includes('admin') ? 'admin' : 'employee',
-                    email: isLogin ? `${name}@example.com` : name,
-                    tasks: [
-                        { id: Math.floor(Math.random() * 900) + 100, title: `Explore ${name}'s Dashboard`, status: 'pending' },
-                        { id: Math.floor(Math.random() * 900) + 100, title: "Review AI predictions", status: 'in-progress' }
-                    ]
+            try {
+                const response = await fetch('http://localhost:5001/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: name, password })
                 });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    onLogin(data.user);
+                } else {
+                    setError(data.error || 'Authentication failed');
+                }
+            } catch (err) {
+                console.error("Login error:", err);
+                setError("Could not connect to the authentication server.");
             }
         } else {
-            setError('Please enter both name and password');
+            setError('Please enter both username and password');
         }
     };
 

@@ -3,6 +3,7 @@ import { TrendingUp, Brain, User, AlertCircle, Activity, Target, ShieldAlert, Lo
 import { MOCK_STOCKS } from '../data/mockData';
 import { AIService } from '../services/aiService';
 import axios from 'axios';
+import Chart from 'react-apexcharts';
 
 const AIPredictionPlayground = () => {
     const [selectedStock, setSelectedStock] = useState(MOCK_STOCKS[0]);
@@ -55,10 +56,58 @@ const AIPredictionPlayground = () => {
                 aiDelta,
                 intuitionError,
                 precisionScore,
+                userPrediction,
                 isHighError: intuitionError > 2.0 // Error threshold for a "warning"
             });
             setLoading(false);
         }, 800);
+    };
+
+    const getCandleData = () => {
+        // Base mock historical days on the current stock's price
+        const lastClose = selectedStock.price || 150;
+
+        // Generate previous days based on last close
+        const d1 = lastClose * 0.98;
+        const d2 = lastClose * 0.99;
+        const d3 = lastClose * 0.975;
+        const d4 = lastClose * 0.995;
+
+        const data = [
+            { x: new Date(Date.now() - 5 * 86400000).getTime(), y: [d1, d1 * 1.01, d1 * 0.99, d2] },
+            { x: new Date(Date.now() - 4 * 86400000).getTime(), y: [d2, d2 * 1.02, d2 * 0.98, d3] },
+            { x: new Date(Date.now() - 3 * 86400000).getTime(), y: [d3, d3 * 1.01, d3 * 0.99, d4] },
+            { x: new Date(Date.now() - 2 * 86400000).getTime(), y: [d4, d4 * 1.005, d4 * 0.99, lastClose * 0.99] },
+            { x: new Date(Date.now() - 1 * 86400000).getTime(), y: [lastClose * 0.99, lastClose * 1.01, lastClose * 0.98, lastClose] },
+        ];
+
+        if (result) {
+            // Predict next day candle
+            const predClose = lastClose * (1 + parseFloat(result.realResult) / 100);
+            const userClose = lastClose * (1 + parseFloat(result.userPrediction) / 100);
+            const aiClose = lastClose * (1 + parseFloat(result.aiPrediction) / 100);
+            const high = Math.max(lastClose, predClose, userClose, aiClose) * 1.005;
+            const low = Math.min(lastClose, predClose, userClose, aiClose) * 0.995;
+
+            data.push({
+                x: new Date(Date.now()).getTime(),
+                y: [lastClose, high, low, predClose]
+            });
+
+            // Note: We avoid 'goals' here because ApexCharts candlesticks don't support them stably
+        }
+
+        return [{ name: 'Price', data }];
+    };
+
+    const candleOptions = {
+        chart: { type: 'candlestick', background: 'transparent', toolbar: { show: false } },
+        theme: { mode: 'dark' },
+        xaxis: { type: 'datetime', labels: { style: { colors: '#888' } } },
+        yaxis: { tooltip: { enabled: true }, labels: { style: { colors: '#888' } } },
+        plotOptions: { candlestick: { colors: { upward: '#00ffa3', downward: '#ff4d4d' } } },
+        grid: { borderColor: 'rgba(255,255,255,0.05)' },
+        tooltip: { theme: 'dark' }
     };
 
     return (
@@ -171,6 +220,20 @@ const AIPredictionPlayground = () => {
                     </div>
                 )}
             </div>
+
+            {result && (
+                <div className="glass-card" style={{ marginTop: '2rem' }}>
+                    <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <TrendingUp color="var(--primary)" /> {selectedStock.symbol} Candlestick Projection (Real-time)
+                    </h3>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                        Visualizing historical prices leading into the predicted market close. The final candle represents the predicted change window relative to your intuition.
+                    </p>
+                    <div style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.05)' }}>
+                        <Chart options={candleOptions} series={getCandleData()} type="candlestick" height={350} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
