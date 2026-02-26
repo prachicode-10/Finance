@@ -1,10 +1,32 @@
-import React from 'react';
-import { TrendingUp, TrendingDown, DollarSign, Activity, BarChart3 } from 'lucide-react';
-import { MOCK_STOCKS, PORTFOLIO_DATA } from '../data/mockData';
+import { TrendingUp, TrendingDown, DollarSign, Activity, BarChart3, PieChart as PieIcon, Wallet } from 'lucide-react';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { MOCK_STOCKS, USER_PORTFOLIOS } from '../data/mockData';
 import { AIService } from '../services/aiService';
 
-const Dashboard = () => {
+const Dashboard = ({ user }) => {
     const sentiment = AIService.getSentimentAnalysis();
+
+    // Determine which portfolio to show based on the logged-in user
+    const username = user?.username || user || 'Default';
+
+    // Virtual Portfolio Generator (ensures EVERY name gets unique values)
+    const getDynamicPortfolio = (name, role) => {
+        const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        // Use role-based baseline if available, otherwise 'Default'
+        const baseline = USER_PORTFOLIOS[role] || USER_PORTFOLIOS['Default'];
+
+        // Deterministic variation based on name
+        const balanceVariance = (hash * 137) % 15000;
+        const pnlVariance = ((hash * 7) % 80) / 10 - 4; // -4% to +4%
+
+        return {
+            ...baseline,
+            totalBalance: baseline.totalBalance + balanceVariance,
+            pnlPercentage: Number((baseline.pnlPercentage + pnlVariance).toFixed(1)),
+        };
+    };
+
+    const userPortfolio = USER_PORTFOLIOS[username] || getDynamicPortfolio(username, user?.role);
 
     return (
         <div className="dashboard-view">
@@ -17,11 +39,11 @@ const Dashboard = () => {
                 <div className="glass-card">
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
                         <span style={{ color: 'var(--text-muted)' }}>Portfolio Balance</span>
-                        <DollarSign size={20} color="var(--primary)" />
+                        <Wallet size={20} color="var(--primary)" />
                     </div>
-                    <h2 style={{ fontSize: '1.8rem' }}>${PORTFOLIO_DATA.totalBalance.toLocaleString()}</h2>
+                    <h2 style={{ fontSize: '1.8rem' }}>${userPortfolio.totalBalance.toLocaleString()}</h2>
                     <span style={{ color: 'var(--accent-green)', fontSize: '0.9rem', fontWeight: '600' }}>
-                        +{PORTFOLIO_DATA.pnlPercentage}% This Month
+                        +{userPortfolio.pnlPercentage}% This Month
                     </span>
                 </div>
 
@@ -34,19 +56,120 @@ const Dashboard = () => {
                         {sentiment.overall}
                     </h2>
                     <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                        Sentiment Score: {sentiment.score}
+                        Score: {sentiment.score}
                     </span>
                 </div>
 
                 <div className="glass-card">
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                        <span style={{ color: 'var(--text-muted)' }}>Active Assets</span>
+                        <span style={{ color: 'var(--text-muted)' }}>Total Assets</span>
                         <BarChart3 size={20} color="#ffab00" />
                     </div>
-                    <h2 style={{ fontSize: '1.8rem' }}>{PORTFOLIO_DATA.assets.length}</h2>
+                    <h2 style={{ fontSize: '1.8rem' }}>{userPortfolio.assets.length}</h2>
                     <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
                         Spanning 4 Sectors
                     </span>
+                </div>
+            </div>
+
+            {user?.tasks && user.tasks.length > 0 && (
+                <div className="glass-card" style={{ marginTop: '1.5rem', padding: '1.5rem' }}>
+                    <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.2rem' }}>
+                        Assigned Tasks
+                    </h3>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
+                        {user.tasks.map(task => (
+                            <div key={task.id} style={{
+                                padding: '1rem',
+                                borderRadius: '12px',
+                                background: 'rgba(255,255,255,0.03)',
+                                border: '1px solid var(--card-border)',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center'
+                            }}>
+                                <div>
+                                    <div style={{ fontWeight: '600', fontSize: '0.9rem' }}>{task.title}</div>
+                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>ID: #{task.id}</div>
+                                </div>
+                                <span style={{
+                                    padding: '4px 10px',
+                                    borderRadius: '20px',
+                                    fontSize: '0.7rem',
+                                    fontWeight: '700',
+                                    textTransform: 'uppercase',
+                                    background: task.status === 'completed' ? 'rgba(0, 230, 118, 0.1)' : task.status === 'in-progress' ? 'rgba(99, 102, 241, 0.1)' : 'rgba(255, 171, 0, 0.1)',
+                                    color: task.status === 'completed' ? 'var(--accent-green)' : task.status === 'in-progress' ? 'var(--secondary)' : '#ffab00'
+                                }}>
+                                    {task.status}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 2fr', gap: '1.5rem', marginTop: '1.5rem' }}>
+                <div className="glass-card" style={{ padding: '1.5rem' }}>
+                    <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <PieIcon size={18} color="var(--primary)" /> Portfolio Allocation
+                    </h3>
+                    <div style={{ height: '240px', width: '100%' }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={userPortfolio.assets}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={60}
+                                    outerRadius={80}
+                                    paddingAngle={5}
+                                    dataKey="allocation"
+                                    nameKey="symbol"
+                                >
+                                    {userPortfolio.assets.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={['var(--primary)', 'var(--secondary)', '#ffab00', 'var(--accent-green)'][index % 4]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip
+                                    contentStyle={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', borderRadius: '8px' }}
+                                />
+                                <Legend />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                <div className="glass-card" style={{ padding: '1.5rem', overflowX: 'auto' }}>
+                    <h3 style={{ marginBottom: '1.5rem' }}>Current Holdings</h3>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                        <thead>
+                            <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--card-border)', color: 'var(--text-muted)' }}>
+                                <th style={{ padding: '0.8rem' }}>Asset</th>
+                                <th style={{ padding: '0.8rem' }}>Shares</th>
+                                <th style={{ padding: '0.8rem' }}>Avg Price</th>
+                                <th style={{ padding: '0.8rem' }}>Price</th>
+                                <th style={{ padding: '0.8rem', textAlign: 'right' }}>P/L</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {userPortfolio.assets.map((asset) => {
+                                const profit = (asset.currentPrice - asset.avgPrice) * asset.shares;
+                                const isProfit = profit >= 0;
+                                return (
+                                    <tr key={asset.symbol} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                                        <td style={{ padding: '0.8rem', fontWeight: '600' }}>{asset.symbol}</td>
+                                        <td style={{ padding: '0.8rem' }}>{asset.shares}</td>
+                                        <td style={{ padding: '0.8rem' }}>${asset.avgPrice.toLocaleString()}</td>
+                                        <td style={{ padding: '0.8rem' }}>${asset.currentPrice.toLocaleString()}</td>
+                                        <td style={{ padding: '0.8rem', textAlign: 'right', color: isProfit ? 'var(--accent-green)' : 'var(--accent-red)' }}>
+                                            {isProfit ? '+' : ''}${profit.toLocaleString()}
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -85,7 +208,7 @@ const Dashboard = () => {
                 <div className="dashboard-side-section">
                     <h3 style={{ marginBottom: '1.5rem' }}>Recent Investments</h3>
                     <div className="glass-card" style={{ padding: '1.5rem', display: 'grid', gap: '1.2rem' }}>
-                        {PORTFOLIO_DATA.recentTransactions.map(tx => (
+                        {userPortfolio.recentTransactions.map(tx => (
                             <div key={tx.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                                     <div style={{

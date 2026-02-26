@@ -22,7 +22,12 @@ def home():
     return render_template("MarketSentimental.jsx")
 @app.route("/news/<stock>")
 def news(stock):
-    news_items = get_stock_news(stock)
-    return jsonify(news_items)
+    try:
+        news_items = get_stock_news(stock)
+        return jsonify(news_items)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    print("Backend AI News Service Started on port 5001...")
+    app.run(debug=True, port=5001)

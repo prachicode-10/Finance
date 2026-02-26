@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import {
     CheckCircle2, XCircle, HelpCircle, ArrowRight, RotateCcw,
-    BookOpen, TrendingUp, Brain, PlayCircle, ArrowLeft
+    BookOpen, TrendingUp, Brain, PlayCircle, ArrowLeft, Video
 } from 'lucide-react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { QUIZ_DATA, COURSES_DATA } from '../data/mockData';
 
 const LearningCenter = () => {
@@ -109,7 +110,25 @@ const LearningCenter = () => {
                                 </div>
                                 <h4 style={{ margin: 0 }}>{module.title}</h4>
                             </div>
-                            <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>{module.content}</p>
+                            <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', lineHeight: '1.6', marginBottom: '1.5rem' }}>{module.content}</p>
+
+                            {module.videoUrl && (
+                                <div className="video-section" style={{ marginTop: '1.5rem', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--card-border)' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 15px', background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid var(--card-border)' }}>
+                                        <Video size={16} color="var(--primary)" />
+                                        <span style={{ fontSize: '0.85rem', fontWeight: '600' }}>Video Explanation</span>
+                                    </div>
+                                    <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
+                                        <iframe
+                                            src={`${module.videoUrl}?origin=${window.location.origin}`}
+                                            title={module.title}
+                                            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowFullScreen
+                                        ></iframe>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>
@@ -130,11 +149,46 @@ const LearningCenter = () => {
 
         if (quizComplete) {
             return (
-                <div className="glass-card" style={{ textAlign: 'center', padding: '3rem' }}>
-                    <CheckCircle2 size={60} color="var(--primary)" style={{ marginBottom: '1.5rem' }} />
-                    <h2>Assessment Complete!</h2>
-                    <p style={{ margin: '1rem 0', fontSize: '1.2rem' }}>You scored {score} out of {currentQuizData.length}</p>
-                    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '2rem' }}>
+                <div className="glass-card" style={{ textAlign: 'center', padding: '2.5rem' }}>
+                    <CheckCircle2 size={50} color="var(--primary)" style={{ marginBottom: '1rem' }} />
+                    <h2 style={{ marginBottom: '2rem' }}>Assessment Results</h2>
+
+                    <div style={{ height: '300px', width: '100%', marginBottom: '2rem' }}>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={[
+                                        { name: 'Correct', value: score },
+                                        { name: 'Incorrect', value: currentQuizData.length - score }
+                                    ]}
+                                    innerRadius={70}
+                                    outerRadius={100}
+                                    paddingAngle={5}
+                                    dataKey="value"
+                                >
+                                    <Cell fill="var(--accent-green)" />
+                                    <Cell fill="var(--accent-red)" />
+                                </Pie>
+                                <Tooltip
+                                    contentStyle={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', borderRadius: '8px' }}
+                                    itemStyle={{ color: 'var(--text-main)' }}
+                                />
+                                <Legend verticalAlign="bottom" height={36} />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
+
+                    <p style={{ margin: '1rem 0', fontSize: '1.2rem', fontWeight: '600' }}>
+                        You scored {score} out of {currentQuizData.length}
+                    </p>
+
+                    <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>
+                        {score === currentQuizData.length ? "Perfect score! You're a market expert." :
+                            score > currentQuizData.length / 2 ? "Great job! Keep refining your skills." :
+                                "Keep studying! The market is a lifelong teacher."}
+                    </p>
+
+                    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
                         <button className="btn-outline" onClick={resetQuiz} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <RotateCcw size={20} /> Retake Quiz
                         </button>

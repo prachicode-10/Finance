@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
 import { Newspaper, MessageCircle, BarChart, Info, Search, Loader2 } from 'lucide-react';
-import { MOCK_NEWS } from '../data/mockData';
 import { AIService } from '../services/aiService';
 import axios from 'axios';
 
+const API_BASE_URL = 'http://127.0.0.1:5001';
+
 const MarketSentiment = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [newsResults, setNewsResults] = useState(MOCK_NEWS);
+    const [newsResults, setNewsResults] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [summary, setSummary] = useState(AIService.getSentimentAnalysis());
+    const [summary, setSummary] = useState({
+        overall: 'Neutral',
+        score: '0.00',
+        summary: 'Enter a stock ticker to analyze market sentiment.'
+    });
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -16,29 +21,39 @@ const MarketSentiment = () => {
 
         setLoading(true);
         try {
-            const response = await axios.get(`http://127.0.0.1:5000/news/${searchTerm}`);
-            const realNews = response.data.map((item, index) => ({
-                id: `real-${index}`,
-                title: item.title,
-                url: item.url,
-                source: item.source,
-                time: 'Just now',
-                // Simulate sentiment logic for real news
-                score: (Math.random() * 2 - 1).toFixed(2),
-                impact: "Analyzing market implications based on real-time data flow..."
+            const response = await axios.get(`${API_BASE_URL}/news/${searchTerm}`);
+            const apiNews = response.data.slice(0, 5); // Take top 5
+
+            // For each article, fetch sentiment score from backend
+            const realNews = await Promise.all(apiNews.map(async (item, index) => {
+                let score = 0;
+                let impact = `Analyzing market implications for ${item.title}...`;
+                try {
+                    const sentimentResponse = await axios.get(`${API_BASE_URL}/analyze/${encodeURIComponent(item.title)}`);
+                    score = sentimentResponse.data.score;
+                    impact = sentimentResponse.data.sentiment === "Positive" ? "Positive outlook indicated." : sentimentResponse.data.sentiment === "Negative" ? "Caution advised." : "Neutral impact expected.";
+                } catch (err) {
+                    console.error("Error analyzing news sentiment", err);
+                }
+                return {
+                    id: `real-${index}`,
+                    title: item.title,
+                    url: item.url,
+                    source: item.source,
+                    time: item.publishedAt ? new Date(item.publishedAt).toLocaleDateString() : 'Recent',
+                    score: score.toFixed(2),
+                    impact: impact
+                };
             }));
 
             setNewsResults(realNews);
-            // Re-calculate mock summary based on new results
-            const avgScore = realNews.reduce((acc, curr) => acc + parseFloat(curr.score), 0) / realNews.length;
-            setSummary({
-                overall: avgScore > 0 ? 'Bullish' : 'Bearish',
-                score: avgScore.toFixed(2),
-                summary: `The market shows a ${avgScore > 0 ? 'positive' : 'negative'} trend for ${searchTerm} based on recent developments.`
-            });
+
+            // Get overall summary using the updated AIService
+            const newSummary = await AIService.getSentimentAnalysis(realNews);
+            setSummary(newSummary);
         } catch (error) {
             console.error("Error fetching news:", error);
-            alert("Could not connect to backend. Make sure the Flask server is running at http://127.0.0.1:5000");
+            alert("Could not connect to backend. Make sure the Flask server is running at http://127.0.0.1:5001");
         } finally {
             setLoading(false);
         }

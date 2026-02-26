@@ -27,12 +27,14 @@ const AIFinancialAdvisor = () => {
         setInput('');
         setIsTyping(true);
 
-        // Simulate AI Thinking
-        setTimeout(() => {
-            const response = AIService.getAdvisorResponse(input);
+        try {
+            const response = await AIService.getAdvisorResponse(input);
             setMessages(prev => [...prev, { role: 'assistant', content: response }]);
+        } catch (err) {
+            setMessages(prev => [...prev, { role: 'assistant', content: "I'm having trouble connecting right now." }]);
+        } finally {
             setIsTyping(false);
-        }, 1000);
+        }
     };
 
     return (

@@ -19,7 +19,7 @@ function App() {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <Dashboard />;
+        return <Dashboard user={user} />;
       case 'learning':
         return <LearningCenter />;
       case 'prediction':
@@ -42,8 +42,8 @@ function App() {
   if (authState === 'auth') {
     return (
       <Auth
-        onLogin={(name) => {
-          setUser(name);
+        onLogin={(userObj) => {
+          setUser(userObj);
           setAuthState('authenticated');
         }}
       />
@@ -64,9 +64,9 @@ function App() {
         <header style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem', padding: '0 2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
             <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
-              {user ? user[0].toUpperCase() : 'U'}
+              {user ? (user.username ? user.username[0].toUpperCase() : 'U') : 'U'}
             </div>
-            <span>{user || 'User'}</span>
+            <span>{user ? (user.username || 'User') : 'User'}</span>
           </div>
         </header>
         {renderContent()}

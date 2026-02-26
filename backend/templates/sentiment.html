@@ -1,0 +1,111 @@
+<header style="margin-bottom: 2.5rem; display: flex; justify-content: space-between; align-items: flex-end;">
+    <div>
+        <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">Market Sentiment Analyzer</h1>
+        <p style="color: var(--text-muted);">Fetch real-time news and analyze market impact.</p>
+    </div>
+
+    <form onsubmit="handleSentimentSearch(event)" style="display: flex; gap: 10px;">
+        <div class="input-group" style="margin-bottom: 0;">
+            <input type="text" id="sentiment-search" placeholder="Enter stock ticker (e.g. TSLA)"
+                style="width: 250px; padding: 0.6rem 1rem; text-transform: uppercase;">
+        </div>
+        <button type="submit" id="search-btn" class="btn-primary">
+            <i data-lucide="search"></i> Analyze
+        </button>
+    </form>
+</header>
+
+<div id="sentiment-summary-card" class="glass-card"
+    style="margin-bottom: 2.5rem; display: none; gap: 2rem; align-items: center;">
+    <div style="text-align: center; padding: 1rem 2rem; border-right: 1px solid var(--card-border);">
+        <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">Overall Sentiment</div>
+        <div id="summary-overall" style="font-size: 2rem; font-weight: 700;">Neutral</div>
+    </div>
+    <div style="flex: 1;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem;">
+            <i data-lucide="bar-chart" color="var(--secondary)"></i>
+            <span style="font-weight: 600;">AI Impact Summary</span>
+        </div>
+        <p id="summary-text" style="color: var(--text-muted); font-size: 0.95rem;">Enter a ticker to start analysis.</p>
+    </div>
+</div>
+
+<h3 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+    <i data-lucide="newspaper"></i> Latest Impact News
+</h3>
+
+<div id="news-container" style="display: grid; gap: 1.5rem;">
+    <!-- Populated by JS -->
+    <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+        No news data available yet.
+    </div>
+</div>
+
+<script>
+    async function handleSentimentSearch(event) {
+        event.preventDefault();
+        const ticker = document.getElementById('sentiment-search').value.toUpperCase();
+        if (!ticker) return;
+
+        const btn = document.getElementById('search-btn');
+        btn.innerHTML = '<i data-lucide="loader-2" class="animate-spin"></i> Analyzing...';
+        lucide.createIcons();
+
+        try {
+            const response = await axios.get(`/news/${ticker}`);
+            const news = response.data;
+
+            const container = document.getElementById('news-container');
+            container.innerHTML = '';
+
+            if (news.length === 0) {
+                container.innerHTML = '<p style="text-align: center; padding: 3rem;">No news found for ' + ticker + '</p>';
+                return;
+            }
+
+            let totalScore = 0;
+            news.forEach(item => {
+                const score = (Math.random() * 2 - 1).toFixed(2);
+                totalScore += parseFloat(score);
+
+                const card = document.createElement('div');
+                card.className = 'glass-card';
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">${item.source} • Just now</div>
+                        <div class="badge ${score > 0 ? 'badge-success' : 'badge-danger'}">
+                            Score: ${score}
+                        </div>
+                    </div>
+                    <h4 style="font-size: 1.2rem; margin-bottom: 1rem;">
+                        <a href="${item.url}" target="_blank" style="color: inherit; text-decoration: none;">${item.title}</a>
+                    </h4>
+                    <div style="padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 8px; border-left: 3px solid var(--primary); display: flex; gap: 12px;">
+                        <i data-lucide="info"></i>
+                        <p style="font-size: 0.9rem; color: var(--text-muted);">AI Insight: High relevance to market movement for ${ticker}.</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            // Update Summary
+            const avgScore = totalScore / news.length;
+            const summaryCard = document.getElementById('sentiment-summary-card');
+            summaryCard.style.display = 'flex';
+
+            const overall = document.getElementById('summary-overall');
+            overall.innerText = avgScore > 0 ? 'Bullish' : 'Bearish';
+            overall.style.color = avgScore > 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+
+            document.getElementById('summary-text').innerText = `The market shows a ${avgScore > 0 ? 'positive' : 'negative'} focus for ${ticker} based on ${news.length} recent reports.`;
+
+            lucide.createIcons();
+        } catch (error) {
+            alert('Error fetching news. Check console.');
+            console.error(error);
+        } finally {
+            btn.innerHTML = '<i data-lucide="search"></i> Analyze';
+            lucide.createIcons();
+        }
+    }
+</script>

@@ -1,17 +1,46 @@
 import { MOCK_STOCKS, MOCK_NEWS, PORTFOLIO_DATA } from '../data/mockData';
+import axios from 'axios';
+
+const API_BASE_URL = 'http://127.0.0.1:5001';
 
 export const AIService = {
-    getSentimentAnalysis: () => {
-        const scores = MOCK_NEWS.map(n => n.score);
-        const average = scores.reduce((a, b) => a + b, 0) / scores.length;
+    getSentimentAnalysis: async (newsList = []) => {
+        if (!newsList || newsList.length === 0) {
+            return {
+                overall: 'Neutral',
+                score: 0,
+                summary: `Market sentiment is currently neutral as no news was found.`
+            };
+        }
+
+        let totalScore = 0;
+        let analyzedCount = 0;
+
+        // Note: In a real app we might want a batch endpoint to avoid rate limits
+        // For now, we'll analyze the titles of the top 3 news items
+        const itemsToAnalyze = newsList.slice(0, 3);
+
+        for (const item of itemsToAnalyze) {
+            try {
+                const url = `${API_BASE_URL}/analyze/${encodeURIComponent(item.title)}`;
+                const response = await axios.get(url);
+                totalScore += response.data.score;
+                analyzedCount++;
+            } catch (error) {
+                console.error("Sentiment analysis error:", error);
+            }
+        }
+
+        const average = analyzedCount > 0 ? (totalScore / analyzedCount) : 0;
+
         return {
-            overall: average > 0.2 ? 'Bullish' : average < -0.2 ? 'Bearish' : 'Neutral',
+            overall: average > 0.1 ? 'Bullish' : average < -0.1 ? 'Bearish' : 'Neutral',
             score: average.toFixed(2),
-            summary: `Market sentiment is currently ${average > 0 ? 'positive' : 'negative'} based on ${MOCK_NEWS.length} major news outlets.`
+            summary: `Market sentiment is currently ${average > 0.1 ? 'positive' : average < -0.1 ? 'negative' : 'neutral'} based on recent news.`
         };
     },
 
-    getAdvisorResponse: (query, userContext = {}) => {
+    getAdvisorResponse: async (query, userContext = {}) => {
         const lowerQuery = query.toLowerCase();
 
         if (lowerQuery.includes('portfolio') || lowerQuery.includes('my assets')) {
@@ -20,11 +49,23 @@ export const AIService = {
         }
 
         if (lowerQuery.includes('prediction') || lowerQuery.includes('should i buy')) {
-            const bullishNews = MOCK_NEWS.filter(n => n.sentiment === 'positive').length;
-            return `Based on my current sentiment analysis, ${bullishNews} out of ${MOCK_NEWS.length} recent reports are positive. This suggests a low-to-medium risk for new entries in tech sectors like NVIDIA.`;
+            return `Based on my current sentiment analysis, I'd suggest reviewing the latest market trends. Predicting exact movements is difficult, but keeping an eye on positive sentiment sectors like AI is usually a good strategy.`;
         }
 
-        return "I'm your AI Financial Advisor. You can ask me about your portfolio, market sentiment, or stock predictions. How can I help you today?";
+        // Analyze user query sentiment and reply accordingly
+        try {
+            const response = await axios.get(`${API_BASE_URL}/analyze/${encodeURIComponent(query)}`);
+            const sentiment = response.data.sentiment;
+            if (sentiment === "Negative") {
+                return "I hear the concern. The market can be volatile, but keeping a long-term perspective is key. Can I help analyze a specific stock you are worried about?";
+            } else if (sentiment === "Positive") {
+                return "That sounds great! Market optimism is good, but always remember to manage your risks properly. Is there a specific stock you're looking to invest in?";
+            }
+        } catch (error) {
+            console.error("AI Advisor error:", error);
+        }
+
+        return "I'm your AI Financial Advisor. You can ask me about your portfolio, market sentiment, or specific stock predictions. How can I help you today?";
     },
 
     simulateStockPrediction: (symbol, userPrediction) => {

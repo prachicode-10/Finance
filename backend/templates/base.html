@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}AI Finance | Smart Investing{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title><%- typeof title !='undefined' ? title : 'AI Finance | Smart Investing' %></title>
+    <link rel="stylesheet" href="/static/style.css">
     <!-- CDNs -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
+
 <body>
     <div class="dashboard-layout">
         <aside class="sidebar">
@@ -16,10 +18,13 @@
                 <i data-lucide="zap" color="var(--primary)"></i>
                 <span>FinLearn AI</span>
             </a>
-            
+
             <nav class="nav-links">
                 <a href="/dashboard" class="nav-item" id="nav-dashboard">
                     <i data-lucide="layout-dashboard"></i> Dashboard
+                </a>
+                <a href="/sentiment" class="nav-item" id="nav-sentiment">
+                    <i data-lucide="newspaper"></i> Sentiment
                 </a>
                 <a href="/learning" class="nav-item" id="nav-learning">
                     <i data-lucide="book-open"></i> Academy
@@ -39,29 +44,30 @@
                 <div id="user-display" class="glass-card" style="padding: 1rem; margin-bottom: 1rem; display: none;">
                     <span id="user-name" style="font-weight: 600; font-size: 0.9rem;"></span>
                 </div>
-                <button onclick="handleLogout()" class="nav-item" style="width: 100%; border: none; background: none; color: var(--accent-red);">
+                <button onclick="handleLogout()" class="nav-item"
+                    style="width: 100%; border: none; background: none; color: var(--accent-red);">
                     <i data-lucide="log-out"></i> Logout
                 </button>
             </div>
         </aside>
 
         <main class="main-content">
-            {% block content %}{% endblock %}
+            <%- body %>
         </main>
     </div>
 
-    <script src="{{ url_for('static', filename='main.js') }}"></script>
+    <script src="/static/main.js"></script>
     <script>
         // Initialize Lucide icons
         lucide.createIcons();
-        
+
         // Active link highlighting
         const path = window.location.pathname;
         const navId = 'nav-' + path.replace('/', '');
         const activeNav = document.getElementById(navId);
         if (activeNav) activeNav.classList.add('active');
 
-        // Simple Auth Guard (ported from React logic)
+        // Simple Auth Guard
         function checkAuth() {
             const user = localStorage.getItem('finUser');
             if (!user && window.location.pathname !== '/') {
@@ -75,7 +81,7 @@
                 }
             }
         }
-        
+
         function handleLogout() {
             localStorage.removeItem('finUser');
             window.location.href = '/';
@@ -84,4 +90,5 @@
         checkAuth();
     </script>
 </body>
+
 </html>
