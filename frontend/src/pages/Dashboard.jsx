@@ -1,0 +1,85 @@
+import React from 'react';
+import { TrendingUp, TrendingDown, DollarSign, Activity, BarChart3 } from 'lucide-react';
+import { MOCK_STOCKS, PORTFOLIO_DATA } from '../data/mockData';
+import { AIService } from '../services/aiService';
+
+const Dashboard = () => {
+    const sentiment = AIService.getSentimentAnalysis();
+
+    return (
+        <div className="dashboard-view">
+            <header style={{ marginBottom: '2.5rem' }}>
+                <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Market Overview</h1>
+                <p style={{ color: 'var(--text-muted)' }}>Welcome back, here's what's happening today.</p>
+            </header>
+
+            <div className="stat-grid">
+                <div className="glass-card">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                        <span style={{ color: 'var(--text-muted)' }}>Portfolio Balance</span>
+                        <DollarSign size={20} color="var(--primary)" />
+                    </div>
+                    <h2 style={{ fontSize: '1.8rem' }}>${PORTFOLIO_DATA.totalBalance.toLocaleString()}</h2>
+                    <span style={{ color: 'var(--accent-green)', fontSize: '0.9rem', fontWeight: '600' }}>
+                        +{PORTFOLIO_DATA.pnlPercentage}% This Month
+                    </span>
+                </div>
+
+                <div className="glass-card">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                        <span style={{ color: 'var(--text-muted)' }}>AI Market Sentiment</span>
+                        <Activity size={20} color="var(--secondary)" />
+                    </div>
+                    <h2 style={{ fontSize: '1.8rem', color: sentiment.overall === 'Bullish' ? 'var(--accent-green)' : 'var(--accent-red)' }}>
+                        {sentiment.overall}
+                    </h2>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                        Sentiment Score: {sentiment.score}
+                    </span>
+                </div>
+
+                <div className="glass-card">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                        <span style={{ color: 'var(--text-muted)' }}>Active Assets</span>
+                        <BarChart3 size={20} color="#ffab00" />
+                    </div>
+                    <h2 style={{ fontSize: '1.8rem' }}>{PORTFOLIO_DATA.assets.length}</h2>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                        Spanning 4 Sectors
+                    </span>
+                </div>
+            </div>
+
+            <h3 style={{ marginBottom: '1.5rem' }}>Trending Stocks</h3>
+            <div style={{ display: 'grid', gap: '1rem' }}>
+                {MOCK_STOCKS.map(stock => (
+                    <div key={stock.symbol} className="glass-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 1.5rem' }}>
+                        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                            <div style={{ width: '40px', height: '40px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700' }}>
+                                {stock.symbol[0]}
+                            </div>
+                            <div>
+                                <div style={{ fontWeight: '600' }}>{stock.symbol}</div>
+                                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{stock.name}</div>
+                            </div>
+                        </div>
+
+                        <div style={{ height: '30px', width: '80px', background: 'rgba(255,255,255,0.02)', borderRadius: '4px' }}>
+                            {/* Mini chart placeholder */}
+                        </div>
+
+                        <div style={{ textAlign: 'right' }}>
+                            <div style={{ fontWeight: '600' }}>${stock.price}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: stock.trend === 'up' ? 'var(--accent-green)' : 'var(--accent-red)', fontSize: '0.85rem' }}>
+                                {stock.trend === 'up' ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
+                                {stock.changePercent}%
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+export default Dashboard;
