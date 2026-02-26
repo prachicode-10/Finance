@@ -18,9 +18,9 @@ const LandingPage = ({ onStart }) => {
 
             <section className="hero">
                 <div className="hero-content">
-                    <div className="badge-ai">
-                        <Sparkles size={14} /> powered by bro
-                    </div>
+                    {/* <div className="badge-ai">
+                        <Sparkles size={14} /> powered by bro 
+                    </div> */}
                     <h1>Master Your Assets with <span className="gradient-text">AI Precision</span></h1>
                     <p>
                         Experience the future of finance. Learn, predict, and analyze markets
