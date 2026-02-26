@@ -19,7 +19,7 @@ def get_stock_news(stock):
     return news_list
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return render_template("MarketSentimental.jsx")
 @app.route("/news/<stock>")
 def news(stock):
     news_items = get_stock_news(stock)

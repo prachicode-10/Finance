@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Finance | Smart Investing{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- CDNs -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <a href="/" class="logo">
+                <i data-lucide="zap" color="var(--primary)"></i>
+                <span>FinLearn AI</span>
+            </a>
+            
+            <nav class="nav-links">
+                <a href="/dashboard" class="nav-item" id="nav-dashboard">
+                    <i data-lucide="layout-dashboard"></i> Dashboard
+                </a>
+                <a href="/learning" class="nav-item" id="nav-learning">
+                    <i data-lucide="book-open"></i> Academy
+                </a>
+                <a href="/predict" class="nav-item" id="nav-predict">
+                    <i data-lucide="brain"></i> Prediction
+                </a>
+                <a href="/portfolio" class="nav-item" id="nav-portfolio">
+                    <i data-lucide="pie-chart"></i> Portfolio
+                </a>
+                <a href="/advisor" class="nav-item" id="nav-advisor">
+                    <i data-lucide="message-square"></i> AI Advisor
+                </a>
+            </nav>
+
+            <div style="margin-top: auto;">
+                <div id="user-display" class="glass-card" style="padding: 1rem; margin-bottom: 1rem; display: none;">
+                    <span id="user-name" style="font-weight: 600; font-size: 0.9rem;"></span>
+                </div>
+                <button onclick="handleLogout()" class="nav-item" style="width: 100%; border: none; background: none; color: var(--accent-red);">
+                    <i data-lucide="log-out"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Active link highlighting
+        const path = window.location.pathname;
+        const navId = 'nav-' + path.replace('/', '');
+        const activeNav = document.getElementById(navId);
+        if (activeNav) activeNav.classList.add('active');
+
+        // Simple Auth Guard (ported from React logic)
+        function checkAuth() {
+            const user = localStorage.getItem('finUser');
+            if (!user && window.location.pathname !== '/') {
+                window.location.href = '/';
+            } else if (user) {
+                const userDisplay = document.getElementById('user-display');
+                const userName = document.getElementById('user-name');
+                if (userDisplay && userName) {
+                    userDisplay.style.display = 'block';
+                    userName.innerText = JSON.parse(user).name;
+                }
+            }
+        }
+        
+        function handleLogout() {
+            localStorage.removeItem('finUser');
+            window.location.href = '/';
+        }
+
+        checkAuth();
+    </script>
+</body>
+</html>

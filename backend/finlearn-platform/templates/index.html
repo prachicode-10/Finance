@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}FinLearn AI | Future of Finance{% endblock %}
+
+{% block content %}
+<div class="landing-hero" style="padding: 4rem 0; text-align: center;">
+    <div class="badge-ai">Powered by Intelligence</div>
+    <h1 style="font-size: 3.5rem; margin-bottom: 1.5rem;">Master the Markets with <span class="gradient-text">AI
+            Intelligence</span></h1>
+    <p style="font-size: 1.2rem; color: var(--text-muted); max-width: 700px; margin: 0 auto 3rem;">
+        The all-in-one platform for financial literacy, stock predictions, and portfolio management.
+    </p>
+
+    <!-- Auth Section -->
+    <div id="auth-container" class="glass-card" style="max-width: 450px; margin: 0 auto; text-align: left;">
+        <h2 id="auth-title" style="margin-bottom: 2rem;">Login to your Account</h2>
+        <form onsubmit="handleLogin(event)">
+            <div class="input-group">
+                <label><i data-lucide="user"></i> Full Name</label>
+                <input type="text" id="login-name" placeholder="Enter your name" required>
+            </div>
+            <div class="input-group">
+                <label><i data-lucide="lock"></i> Password</label>
+                <input type="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-primary" style="width: 100%;">
+                Get Started <i data-lucide="arrow-right"></i>
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="features-grid" style="margin-top: 5rem;">
+    <div class="glass-card">
+        <div class="icon-box"><i data-lucide="brain"></i></div>
+        <h3>AI Predictions</h3>
+        <p>Advanced algorithms to help you predict stock trends with high precision.</p>
+    </div>
+    <div class="glass-card">
+        <div class="icon-box"><i data-lucide="book-open"></i></div>
+        <h3>Finance Academy</h3>
+        <p>Learn from structured modules designed for every level of investor.</p>
+    </div>
+    <div class="glass-card">
+        <div class="icon-box"><i data-lucide="bar-chart-2"></i></div>
+        <h3>Portfolio Insights</h3>
+        <p>Real-time analysis and risk assessment of your current investments.</p>
+    </div>
+</div>
+
+<style>
+    .landing-hero {
+        background-image:
+            radial-gradient(circle at 50% 50%, rgba(0, 255, 163, 0.05) 0%, transparent 70%);
+    }
+
+    .badge-ai {
+        display: inline-block;
+        padding: 6px 16px;
+        background: rgba(0, 255, 163, 0.1);
+        color: var(--primary);
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(0, 255, 163, 0.2);
+    }
+
+    .gradient-text {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+</style>
+{% endblock %}

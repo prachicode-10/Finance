@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Portfolio | FinLearn AI{% endblock %}
+
+{% block content %}
+<header style="margin-bottom: 2.5rem;">
+    <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">My Portfolio</h1>
+    <p style="color: var(--text-muted);">Unified view of your assets and performance.</p>
+</header>
+
+<div class="glass-card" style="margin-bottom: 2rem;">
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; text-align: center;">
+        <div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">Total Value</div>
+            <h2 style="font-size: 2rem;">$125,400.00</h2>
+        </div>
+        <div style="border-left: 1px solid var(--card-border); border-right: 1px solid var(--card-border);">
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">Total P/L</div>
+            <h2 style="font-size: 2rem; color: var(--accent-green);">+$12,450.50</h2>
+        </div>
+        <div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem;">Risk Profile</div>
+            <h2 style="font-size: 2rem; color: var(--secondary);">Moderate</h2>
+        </div>
+    </div>
+</div>
+
+<h3 style="margin-bottom: 1.5rem;">Asset Allocation</h3>
+<div class="glass-card" style="padding: 3rem; text-align: center; color: var(--text-muted);">
+    <i data-lucide="pie-chart" size="64" style="opacity: 0.2; margin-bottom: 1rem;"></i>
+    <p>Asset distribution chart will be initialized here.</p>
+</div>
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | FinLearn AI{% endblock %}
+
+{% block content %}
+<header style="margin-bottom: 2.5rem;">
+    <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">Market Overview</h1>
+    <p style="color: var(--text-muted);">Welcome back, here's what's happening today.</p>
+</header>
+
+<div class="stat-grid">
+    <div class="glass-card">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+            <span style="color: var(--text-muted);">Portfolio Balance</span>
+            <i data-lucide="dollar-sign" color="var(--primary)"></i>
+        </div>
+        <h2 style="font-size: 1.8rem;">$125,400.00</h2>
+        <span style="color: var(--accent-green); font-size: 0.9rem; font-weight: 600;">+11.2% This Month</span>
+    </div>
+
+    <div class="glass-card">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+            <span style="color: var(--text-muted);">Market Sentiment</span>
+            <i data-lucide="activity" color="var(--secondary)"></i>
+        </div>
+        <h2 style="font-size: 1.8rem; color: var(--accent-green);">Bullish</h2>
+        <span style="color: var(--text-muted); font-size: 0.9rem;">AI Confidence: 84%</span>
+    </div>
+
+    <div class="glass-card">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+            <span style="color: var(--text-muted);">Active Assets</span>
+            <i data-lucide="layers" color="#ffab00"></i>
+        </div>
+        <h2 style="font-size: 1.8rem;">12</h2>
+        <span style="color: var(--text-muted); font-size: 0.9rem;">4 Sectors Covered</span>
+    </div>
+</div>
+
+<h3 style="margin-bottom: 1.5rem;">Trending Stocks</h3>
+<div id="trending-stocks" style="display: grid; gap: 1rem;">
+    <!-- Populated by main.js -->
+</div>
+
+{% endblock %}

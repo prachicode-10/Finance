@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}AI Prediction | FinLearn AI{% endblock %}
+
+{% block content %}
+<header style="margin-bottom: 2.5rem;">
+    <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">AI Prediction Playground</h1>
+    <p style="color: var(--text-muted);">Test your intuition against our mathematical models.</p>
+</header>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+    <div class="glass-card">
+        <h3 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+            <i data-lucide="trending-up" color="var(--primary)"></i> Setup Prediction
+        </h3>
+
+        <form id="predict-form" onsubmit="handlePrediction(event)">
+            <div class="input-group">
+                <label>Select Asset</label>
+                <select id="asset-select"
+                    style="width: 100%; padding: 0.8rem; background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); color: white; border-radius: 8px;">
+                    <option value="NVDA">NVDA - NVIDIA Corp</option>
+                    <option value="TSLA">TSLA - Tesla, Inc.</option>
+                    <option value="AAPL">AAPL - Apple Inc.</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>24h Prediction (%)</label>
+                <input type="number" step="0.01" id="user-pred" placeholder="e.g. 1.25" required>
+            </div>
+
+            <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">
+                Compare with AI <i data-lucide="brain"></i>
+            </button>
+        </form>
+    </div>
+
+    <div id="result-card" class="glass-card" style="display: none;">
+        <h3 style="margin-bottom: 1.5rem;">Simulation Results</h3>
+        <div id="results-display" style="display: grid; gap: 1.2rem;">
+            <!-- Populated by main.js -->
+        </div>
+    </div>
+
+    <div id="placeholder-card" class="glass-card"
+        style="display: flex; align-items: center; justify-content: center; text-align: center; color: var(--text-muted);">
+        <div>
+            <i data-lucide="brain" size="48" style="opacity: 0.2; margin-bottom: 1rem;"></i>
+            <p>Select a stock and enter a prediction <br> to run the comparison.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function handlePrediction(event) {
+        event.preventDefault();
+        const asset = document.getElementById('asset-select').value;
+        const userPred = document.getElementById('user-pred').value;
+
+        const aiPred = (Math.random() * 4 - 2).toFixed(2);
+        const real = (Math.random() * 4 - 2).toFixed(2);
+
+        document.getElementById('placeholder-card').style.display = 'none';
+        document.getElementById('result-card').style.display = 'block';
+
+        const display = document.getElementById('results-display');
+        display.innerHTML = `
+            <div style="display: flex; justify-content: space-between; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 12px;">
+                <span>Your Prediction</span>
+                <span style="font-weight: 700;">${userPred}%</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 1rem; background: rgba(99, 102, 241, 0.05); border-radius: 12px; border: 1px solid var(--secondary);">
+                <span style="color: var(--secondary);">AI Prediction</span>
+                <span style="font-weight: 700;">${aiPred}%</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 1rem; background: rgba(0, 255, 163, 0.05); border-radius: 12px; border: 1px solid var(--primary);">
+                <span style="color: var(--primary);">Real Result (Sim)</span>
+                <span style="font-weight: 700;">${real}%</span>
+            </div>
+        `;
+    }
+</script>
+{% endblock %}
