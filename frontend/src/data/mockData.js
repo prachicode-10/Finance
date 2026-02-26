@@ -38,6 +38,7 @@ export const MOCK_NEWS = [
 
 export const QUIZ_DATA = [
   {
+    id: 1,
     question: "What is a 'Stop-Loss' order used for?",
     options: [
       "To automatically buy a stock at a lower price",
@@ -49,6 +50,7 @@ export const QUIZ_DATA = [
     explanation: "A stop-loss order is designed to limit an investor's loss on a security position by automatically selling the security when it reaches a certain price."
   },
   {
+    id: 2,
     question: "Which of these is considered a 'Low Risk' investment?",
     options: [
       "Cryptocurrency",
@@ -58,6 +60,43 @@ export const QUIZ_DATA = [
     ],
     answer: 2,
     explanation: "Government bonds are generally considered low risk because they are backed by the government's ability to tax its citizens."
+  }
+];
+
+export const COURSES_DATA = [
+  {
+    id: 'basics',
+    title: 'Financial Foundations',
+    description: 'Learn the core concepts of investing, risk management, and market mechanics.',
+    icon: 'BookOpen',
+    modules: [
+      { id: 'm1', title: 'Understanding Stocks & Bonds', content: 'Stocks represent ownership in a company, while bonds are loans to an entity...' },
+      { id: 'm2', title: 'The Power of Compounding', content: 'Compound interest is the 8th wonder of the world. It is the interest you earn on interest...' },
+      { id: 'm3', title: 'Introduction to Risk', content: 'Risk is the possibility of losing some or all of your investment. Diversification is key...' }
+    ],
+    quizIds: [1, 2]
+  },
+  {
+    id: 'advanced',
+    title: 'Advanced Trading Strategies',
+    description: 'Master technical analysis, options, and complex market sentiment indicators.',
+    icon: 'TrendingUp',
+    modules: [
+      { id: 'a1', title: 'Technical Analysis 101', content: 'Technical analysis is a trading discipline employed to evaluate investments and identify trading opportunities...' },
+      { id: 'a2', title: 'Options & Derivatives', content: 'Options are financial instruments that are based on the value of underlying securities...' }
+    ],
+    quizIds: []
+  },
+  {
+    id: 'ai-finance',
+    title: 'AI in Modern Finance',
+    description: 'Explore how AI and Machine Learning are reshaping the investment landscape.',
+    icon: 'Brain',
+    modules: [
+      { id: 'ai1', title: 'Algorithmic Trading', content: 'Algorithmic trading is a process for executing orders using automated pre-programmed trading instructions...' },
+      { id: 'ai2', title: 'Sentiment Analysis in Finance', content: 'Financial sentiment analysis is the use of NLP to track the mood of investors and markets...' }
+    ],
+    quizIds: []
   }
 ];
 

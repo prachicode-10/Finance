@@ -19,7 +19,7 @@ const LandingPage = ({ onStart }) => {
             <section className="hero">
                 <div className="hero-content">
                     <div className="badge-ai">
-                        <Sparkles size={14} /> Powered by Simulated Intelligence
+                        <Sparkles size={14} /> powered by bro
                     </div>
                     <h1>Master Your Assets with <span className="gradient-text">AI Precision</span></h1>
                     <p>
