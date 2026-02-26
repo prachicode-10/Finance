@@ -109,5 +109,11 @@ export const PORTFOLIO_DATA = {
     { symbol: 'AAPL', shares: 200, avgPrice: 150.00, currentPrice: 182.31, allocation: 25 },
     { symbol: 'MSFT', shares: 80, avgPrice: 310.00, currentPrice: 405.20, allocation: 30 },
     { symbol: 'CASH', shares: 1, avgPrice: 12540.00, currentPrice: 12540.00, allocation: 10 },
+  ],
+  recentTransactions: [
+    { id: 1, type: 'Buy', symbol: 'NVDA', amount: 12000.50, date: '2026-02-24', status: 'Completed' },
+    { id: 2, type: 'Sell', symbol: 'AAPL', amount: 4500.00, date: '2026-02-22', status: 'Completed' },
+    { id: 3, type: 'Buy', symbol: 'MSFT', amount: 8200.00, date: '2026-02-20', status: 'Completed' },
+    { id: 4, type: 'Deposit', symbol: 'USD', amount: 50000.00, date: '2026-02-15', status: 'Completed' },
   ]
 };
