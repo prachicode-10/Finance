@@ -86,10 +86,6 @@
   backdrop-filter: blur(10px);
   z-index: 100;
   border-bottom: 1px solid var(--card-border);
-
-  /* animate nav in from top */
-  opacity: 0;
-  animation: fadeInDown 0.8s ease-out forwards;
 }
 
 .landing-nav .logo {
@@ -145,11 +141,6 @@
 .hero-content {
   flex: 1;
   max-width: 600px;
-
-  /* fade up on load */
-  opacity: 0;
-  animation: fadeInUp 1s ease-out forwards;
-  animation-delay: 0.3s;
 }
 
 .badge-ai {
@@ -200,11 +191,6 @@
   flex: 1;
   position: relative;
   height: 400px;
-
-  /* fade up slightly later than content */
-  opacity: 0;
-  animation: fadeInUp 1s ease-out forwards;
-  animation-delay: 0.6s;
 }
 
 .floating-card-1 {
@@ -240,29 +226,6 @@
 
   50% {
     transform: translateY(-20px);
-  }
-}
-
-/* Fade and slide animations used on landing page */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
