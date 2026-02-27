@@ -1,5 +1,5 @@
 import { MOCK_STOCKS, MOCK_NEWS, PORTFOLIO_DATA } from '../data/mockData';
-import { ADVISOR_KNOWLEDGE_BASE } from '../data/advisorDataset';
+import { ADVISOR_KNOWLEDGE_BASE, FALLBACK_ANSWERS } from '../data/advisorDataset';
 import axios from 'axios';
 
 const API_BASE_URL = 'http://127.0.0.1:5001';
@@ -41,7 +41,7 @@ export const AIService = {
     },
 
     getAdvisorResponse: async (query) => {
-        const lowerQuery = query.toLowerCase();
+        const lowerQuery = query.toLowerCase().trim().replace(/[?]$/, "");
 
         // 1. Check for specific dynamic data triggers first (High Priority)
         if (/\b(portfolio|balance|assets|holdings|money|invested)\b/.test(lowerQuery)) {
@@ -49,50 +49,62 @@ export const AIService = {
             return `Your portfolio is looking strong with a total balance of $${PORTFOLIO_DATA.totalBalance.toLocaleString()}. Your largest allocation is in ${topAsset.symbol} (${topAsset.allocation}%). I suggest diversifying more if you want to reduce risk.`;
         }
 
-        // 2. Search knowledge base with weighted scoring
-        let bestCategory = null;
+        // 2. Search knowledge base with prioritized matching
+        let bestEntry = null;
         let maxScore = 0;
 
-        for (const category in ADVISOR_KNOWLEDGE_BASE) {
-            if (category === 'fallback') continue;
+        ADVISOR_KNOWLEDGE_BASE.forEach(entry => {
+            const entryQuestion = entry.question.toLowerCase().trim().replace(/[?]$/, "");
+            let currentScore = 0;
 
-            const data = ADVISOR_KNOWLEDGE_BASE[category];
-            let currentCategoryScore = 0;
+            // Scenario A: Exact or very close match
+            if (lowerQuery === entryQuestion) {
+                currentScore += 100;
+            } else if (lowerQuery.includes(entryQuestion) || entryQuestion.includes(lowerQuery)) {
+                currentScore += 50;
+            }
 
-            data.keywords.forEach(kw => {
-                const kwLower = kw.toLowerCase();
-                const regex = new RegExp(`\\b${kwLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
-
-                if (regex.test(lowerQuery)) {
-                    currentCategoryScore += kwLower.length * (kwLower.includes(' ') ? 2 : 1);
-                    if (lowerQuery.trim() === kwLower) currentCategoryScore += 50;
+            // Scenario B: Keyword overlap within the question
+            const entryWords = entryQuestion.split(/\s+/).filter(w => w.length > 3);
+            entryWords.forEach(word => {
+                if (lowerQuery.includes(word)) {
+                    currentScore += word.length;
                 }
             });
 
-            if (currentCategoryScore > maxScore) {
-                maxScore = currentCategoryScore;
-                bestCategory = category;
+            if (currentScore > maxScore) {
+                maxScore = currentScore;
+                bestEntry = entry;
             }
+        });
+
+        // Threshold for a "good" match
+        if (bestEntry && maxScore > 5) {
+            return bestEntry.answer;
         }
 
-        if (bestCategory && maxScore > 2) {
-            return ADVISOR_KNOWLEDGE_BASE[bestCategory].response;
+        // 3. Project-specific fallbacks (Check if user is asking about the app itself)
+        if (/\b(dashboard|learn|news|sentiment|predict|video|about|project)\b/.test(lowerQuery)) {
+            if (lowerQuery.includes("dash")) return FALLBACK_ANSWERS.dashboard;
+            if (lowerQuery.includes("learn") || lowerQuery.includes("quiz")) return FALLBACK_ANSWERS.learning_center;
+            if (lowerQuery.includes("sentiment") || lowerQuery.includes("news")) return FALLBACK_ANSWERS.sentiment;
+            return FALLBACK_ANSWERS.project_info;
         }
 
-        // 3. Fallback to sentiment-based adaptive reply
+        // 4. Fallback to sentiment-based adaptive reply
         try {
             const response = await axios.get(`${API_BASE_URL}/analyze/${encodeURIComponent(query)}`);
             const sentiment = response.data.sentiment;
             if (sentiment === "Negative") {
-                return "I detect some concern in your query. The financial markets can be complex, but clarity is the first step to success. Would you like me to explain a specific feature of FIN-AI or analyze your asset allocation?";
+                return "I detect some concern in your query. The financial world can be complex, but clarity is the first step. Would you like to know more about budgeting, saving, or your portfolio?";
             } else if (sentiment === "Positive") {
-                return "I love the mathematical optimism! A positive outlook coupled with data-driven strategy is a winning combination. Is there a specific project module or investment asset you'd like to explore next?";
+                return "That's a great positive outlook! Financial growth starts with a good mindset. Is there anything specific about investing or the FIN-AI platform you'd like to explore?";
             }
         } catch (error) {
             console.error("AI Advisor fallback error:", error);
         }
 
-        return ADVISOR_KNOWLEDGE_BASE.fallback.response;
+        return FALLBACK_ANSWERS.fallback;
     },
 
     simulateStockPrediction: (symbol, userPrediction) => {
