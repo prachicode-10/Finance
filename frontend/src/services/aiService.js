@@ -43,30 +43,40 @@ export const AIService = {
     getAdvisorResponse: async (query) => {
         const lowerQuery = query.toLowerCase();
 
-        // 1. Check for specific dynamic data triggers first
-        if (lowerQuery.includes('portfolio') || lowerQuery.includes('my assets') || lowerQuery.includes('balance')) {
+        // 1. Check for specific dynamic data triggers first (High Priority)
+        if (/\b(portfolio|balance|assets|holdings|money|invested)\b/.test(lowerQuery)) {
             const topAsset = PORTFOLIO_DATA.assets.sort((a, b) => b.allocation - a.allocation)[0];
             return `Your portfolio is looking strong with a total balance of $${PORTFOLIO_DATA.totalBalance.toLocaleString()}. Your largest allocation is in ${topAsset.symbol} (${topAsset.allocation}%). I suggest diversifying more if you want to reduce risk.`;
         }
 
-        // 2. Search knowledge base for matches
-        let bestMatch = null;
-        let maxKeywords = 0;
+        // 2. Search knowledge base with weighted scoring
+        let bestCategory = null;
+        let maxScore = 0;
 
         for (const category in ADVISOR_KNOWLEDGE_BASE) {
             if (category === 'fallback') continue;
 
             const data = ADVISOR_KNOWLEDGE_BASE[category];
-            const matchCount = data.keywords.filter(kw => lowerQuery.includes(kw)).length;
+            let currentCategoryScore = 0;
 
-            if (matchCount > maxKeywords) {
-                maxKeywords = matchCount;
-                bestMatch = data.response;
+            data.keywords.forEach(kw => {
+                const kwLower = kw.toLowerCase();
+                const regex = new RegExp(`\\b${kwLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+
+                if (regex.test(lowerQuery)) {
+                    currentCategoryScore += kwLower.length * (kwLower.includes(' ') ? 2 : 1);
+                    if (lowerQuery.trim() === kwLower) currentCategoryScore += 50;
+                }
+            });
+
+            if (currentCategoryScore > maxScore) {
+                maxScore = currentCategoryScore;
+                bestCategory = category;
             }
         }
 
-        if (bestMatch && maxKeywords > 0) {
-            return bestMatch;
+        if (bestCategory && maxScore > 2) {
+            return ADVISOR_KNOWLEDGE_BASE[bestCategory].response;
         }
 
         // 3. Fallback to sentiment-based adaptive reply
@@ -74,12 +84,12 @@ export const AIService = {
             const response = await axios.get(`${API_BASE_URL}/analyze/${encodeURIComponent(query)}`);
             const sentiment = response.data.sentiment;
             if (sentiment === "Negative") {
-                return "I detect some concern in your query. The market's complexity can be daunting, but I'm here to clarify. Would you like to analyze a specific asset or review your diversification strategy?";
+                return "I detect some concern in your query. The financial markets can be complex, but clarity is the first step to success. Would you like me to explain a specific feature of FIN-AI or analyze your asset allocation?";
             } else if (sentiment === "Positive") {
-                return "I love the mathematical optimism! A positive outlook is great for long-term growth. Is there a specific project feature or investment symbol you'd like me to explain next?";
+                return "I love the mathematical optimism! A positive outlook coupled with data-driven strategy is a winning combination. Is there a specific project module or investment asset you'd like to explore next?";
             }
         } catch (error) {
-            console.error("AI Advisor error:", error);
+            console.error("AI Advisor fallback error:", error);
         }
 
         return ADVISOR_KNOWLEDGE_BASE.fallback.response;
