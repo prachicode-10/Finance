@@ -4,6 +4,9 @@ export const MOCK_STOCKS = [
   { symbol: 'TSLA', name: 'Tesla Inc', price: 195.40, change: 5.60, changePercent: 2.95, trend: 'up' },
   { symbol: 'MSFT', name: 'Microsoft Corp', price: 405.20, change: 3.10, changePercent: 0.77, trend: 'up' },
   { symbol: 'BTC', name: 'Bitcoin', price: 52140.0, change: -450.0, changePercent: -0.85, trend: 'down' },
+  { symbol: 'ETH', name: 'Ethereum', price: 2950.0, change: 45.0, changePercent: 1.55, trend: 'up' },
+  { symbol: 'VOO', name: 'Vanguard S&P 500 ETF', price: 462.15, change: 2.10, changePercent: 0.45, trend: 'up' },
+  { symbol: 'BND', name: 'Vanguard Total Bond ETF', price: 72.40, change: -0.15, changePercent: -0.21, trend: 'down' },
 ];
 
 // Stock Sentiment Analysis Data (for MarketSentiment.jsx)
@@ -335,10 +338,66 @@ export const COURSES_DATA = [
     description: 'Master the core concepts of investing, risk management, and market mechanics to build long-term wealth.',
     icon: 'BookOpen',
     modules: [
-      { id: 'm1', title: 'Understanding Stocks & Bonds', videoUrl: 'https://www.youtube.com/embed/5gFnhT6e1Zs', videoType: 'youtube', content: 'Stocks represent ownership (equity) in a company, offering potential for capital appreciation and dividends. Bonds are debt instruments where you lend money to governments or corporations in exchange for periodic interest payments. Balancing these two is the cornerstone of traditional investing.' },
-      { id: 'm2', title: 'The Power of Compounding', videoUrl: 'https://www.youtube.com/embed/UqPumPMD6-Y', videoType: 'youtube', content: 'Compounding is the process where the value of an investment increases because the earnings on an investment, both capital gains and interest, earn interest as time passes. Starting early is more important than the amount invested due to the exponential nature of time-weighted returns.' },
-      { id: 'm3', title: 'Modern Portfolio Theory', videoUrl: 'https://www.youtube.com/embed/6BX-Zr0z_5s', videoType: 'youtube', content: 'MPT suggests that it is not enough to look at the expected risk and return of one particular stock. By investing in more than one stock, an investor can reap the benefits of diversification — chief among them is a reduction in the riskiness of the portfolio.' },
-      { id: 'm4', title: 'Inflation & Purchasing Power', videoUrl: 'https://www.youtube.com/embed/OIlf_G2JhWw', videoType: 'youtube', content: 'Inflation reduces the value of your cash over time. To grow wealth, your investment returns must exceed the rate of inflation. Real returns = Nominal Returns - Inflation Rate. Understanding this helps in choosing assets like stocks or real estate that historically outpace inflation.' }
+      {
+        id: 'm1',
+        title: 'Understanding Stocks & Bonds',
+        aiSummary: 'Stocks represent company ownership; Bonds represent debt. Stocks offer growth/dividends (high risk); Bonds offer interest (lower risk). A balanced mix is key.',
+        diagramData: {
+          nodes: [
+            { id: 1, label: 'Capital', type: 'source' },
+            { id: 2, label: 'Equity (Stocks)', type: 'asset' },
+            { id: 3, label: 'Debt (Bonds)', type: 'asset' },
+            { id: 4, label: 'Wealth Growth', type: 'result' }
+          ],
+          edges: [{ from: 1, to: 2 }, { from: 1, to: 3 }, { from: 2, to: 4 }, { from: 3, to: 4 }]
+        },
+        content: 'Stocks represent ownership (equity) in a company, offering potential for capital appreciation and dividends. Bonds are debt instruments where you lend money to governments or corporations in exchange for periodic interest payments. Balancing these two is the cornerstone of traditional investing.'
+      },
+      {
+        id: 'm2',
+        title: 'The Power of Compounding',
+        aiSummary: 'Compounding is "interest on interest". Time is the most critical variable. Starting early, even with small amounts, creates exponential wealth growth over decades.',
+        diagramData: {
+          nodes: [
+            { id: 1, label: 'Principal', type: 'source' },
+            { id: 2, label: 'Reinvest Earnings', type: 'process' },
+            { id: 3, label: 'Time Matrix', type: 'multiplier' },
+            { id: 4, label: 'Exponential Curve', type: 'result' }
+          ],
+          edges: [{ from: 1, to: 2 }, { from: 2, to: 3 }, { from: 3, to: 4 }]
+        },
+        content: 'Compounding is the process where the value of an investment increases because the earnings on an investment, both capital gains and interest, earn interest as time passes. Starting early is more important than the amount invested due to the exponential nature of time-weighted returns.'
+      },
+      {
+        id: 'm3',
+        title: 'Modern Portfolio Theory',
+        aiSummary: 'Diversification reduces risk without sacrificing returns. MPT optimizes assets based on their correlation, ensuring that "all eggs are NOT in one basket".',
+        diagramData: {
+          nodes: [
+            { id: 1, label: 'Asset A', type: 'asset' },
+            { id: 2, label: 'Asset B', type: 'asset' },
+            { id: 3, label: 'Correlator', type: 'process' },
+            { id: 4, label: 'Efficient Frontier', type: 'result' }
+          ],
+          edges: [{ from: 1, to: 3 }, { from: 2, to: 3 }, { from: 3, to: 4 }]
+        },
+        content: 'MPT suggests that it is not enough to look at the expected risk and return of one particular stock. By investing in more than one stock, an investor can reap the benefits of diversification — chief among them is a reduction in the riskiness of the portfolio.'
+      },
+      {
+        id: 'm4',
+        title: 'Inflation & Purchasing Power',
+        aiSummary: 'Inflation is the hidden tax on cash. To build real wealth, your returns must beat the CPI (Inflation Rate). Stocks and Real Estate are historical hedges.',
+        diagramData: {
+          nodes: [
+            { id: 1, label: 'Cash', type: 'source' },
+            { id: 2, label: 'Inflation Filter', type: 'process' },
+            { id: 3, label: 'Purchasing Power', type: 'result' },
+            { id: 4, label: 'Real Yields', type: 'result' }
+          ],
+          edges: [{ from: 1, to: 2 }, { from: 2, to: 3 }, { from: 2, to: 4 }]
+        },
+        content: 'Inflation reduces the value of your cash over time. To grow wealth, your investment returns must exceed the rate of inflation. Real returns = Nominal Returns - Inflation Rate. Understanding this helps in choosing assets like stocks or real estate that historically outpace inflation.'
+      }
     ],
     quizIds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
   },
@@ -348,10 +407,66 @@ export const COURSES_DATA = [
     description: 'Master technical analysis, options, and complex market sentiment indicators used by professional traders.',
     icon: 'TrendingUp',
     modules: [
-      { id: 'a1', title: 'Technical Indicators Deep-Dive', videoUrl: 'https://www.youtube.com/embed/5hBEZD-3W-I', videoType: 'youtube', content: 'Learn to use RSI (Relative Strength Index) to identify overbought/oversold conditions, MACD for momentum shifts, and Bollinger Bands for volatility breakouts. Technical analysis assumes that price action reflects all known information and tends to move in patterns.' },
-      { id: 'a2', title: 'Options: The Greeks & Volatility', videoUrl: 'https://www.youtube.com/embed/fmIlSHowvJo', videoType: 'youtube', content: 'Options allow for non-linear returns. Delta measures price sensitivity, Gamma measures Delta\'s sensitivity, and Theta measures time decay. Understanding the "Greeks" is essential for hedging risk or leveraging positions effectively in volatile markets.' },
-      { id: 'a3', title: 'Market Sentiment & Order Flow', videoUrl: 'https://www.youtube.com/embed/L-16ZO3V7Ic', videoType: 'youtube', content: 'Order flow analysis looks at the actual buy/sell orders hitting the tape. By understanding where large institutional blocks are being placed, retail traders can align themselves with "Smart Money" movements rather than fighting the trend.' },
-      { id: 'a4', title: 'Risk Management & Position Sizing', videoUrl: 'https://www.youtube.com/embed/iR3gM8FOXmc', videoType: 'youtube', content: 'The most important rule in trading is capital preservation. Learn the 1% rule (never risking more than 1% of equity on a single trade) and how to use Kelly Criterion and other statistical methods to determine optimal position sizes.' }
+      {
+        id: 'a1',
+        title: 'Technical Indicators',
+        aiSummary: 'Technical indicators like RSI and MACD help identify trends and reversals. They provide mathematical filters for price volatility and market momentum.',
+        diagramData: {
+          nodes: [
+            { id: 1, label: 'Price Action', type: 'source' },
+            { id: 2, label: 'RSI Filter', type: 'process' },
+            { id: 3, label: 'MACD Signal', type: 'process' },
+            { id: 4, label: 'Entry/Exit', type: 'result' }
+          ],
+          edges: [{ from: 1, to: 2 }, { from: 1, to: 3 }, { from: 2, to: 4 }, { from: 3, to: 4 }]
+        },
+        content: 'Learn to use RSI (Relative Strength Index) to identify overbought/oversold conditions, MACD for momentum shifts, and Bollinger Bands for volatility breakouts.'
+      },
+      {
+        id: 'a2',
+        title: 'Options & Volatility',
+        aiSummary: 'The Greeks (Delta, Theta, Vega) quantify risk in options. Theta decay is the passage of time, while Delta tracks price sensitivity. Essential for hedging.',
+        diagramData: {
+          nodes: [
+            { id: 1, label: 'Underlying', type: 'source' },
+            { id: 2, label: 'Delta', type: 'multiplier' },
+            { id: 3, label: 'Theta', type: 'multiplier' },
+            { id: 4, label: 'Premium Price', type: 'result' }
+          ],
+          edges: [{ from: 1, to: 2 }, { from: 2, to: 4 }, { from: 3, to: 4 }]
+        },
+        content: 'Options allow for non-linear returns. Understanding the "Greeks" is essential for hedging risk or leveraging positions effectively in volatile markets.'
+      },
+      {
+        id: 'a3',
+        title: 'Market Sentiment',
+        aiSummary: 'Sentiment is the collective mood of investors. AI analyzes news and order flow to see where "Smart Money" is moving before retail traders react.',
+        diagramData: {
+          nodes: [
+            { id: 1, label: 'News/Tweets', type: 'source' },
+            { id: 2, label: 'NLP Engine', type: 'process' },
+            { id: 3, label: 'Sentiment Score', type: 'multiplier' },
+            { id: 4, label: 'Market Bias', type: 'result' }
+          ],
+          edges: [{ from: 1, to: 2 }, { from: 2, to: 3 }, { from: 3, to: 4 }]
+        },
+        content: 'Order flow analysis looks at the actual buy/sell orders hitting the tape. By understanding where large institutional blocks are being placed, retail traders can align themselves with "Smart Money" movements.'
+      },
+      {
+        id: 'a4',
+        title: 'Risk Management',
+        aiSummary: 'Capital preservation is priority #1. The 1% rule ensures that no single loss can derail your portfolio. Position sizing is the ultimate survival skill.',
+        diagramData: {
+          nodes: [
+            { id: 1, label: 'Account Equity', type: 'source' },
+            { id: 2, label: '1% Rule', type: 'process' },
+            { id: 3, label: 'Position Size', type: 'multiplier' },
+            { id: 4, label: 'Stop Loss', type: 'result' }
+          ],
+          edges: [{ from: 1, to: 2 }, { from: 2, to: 3 }, { from: 3, to: 4 }]
+        },
+        content: 'The most important rule in trading is capital preservation. Learn the 1% rule and how to use Kelly Criterion and other statistical methods to determine optimal position sizes.'
+      }
     ],
     quizIds: [11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
   },
@@ -361,10 +476,36 @@ export const COURSES_DATA = [
     description: 'Explore how AI, Machine Learning, and Big Data are reshaping the global investment landscape.',
     icon: 'Brain',
     modules: [
-      { id: 'ai1', title: 'Machine Learning Models', videoUrl: 'https://www.youtube.com/embed/IZrzvjJy6rs', videoType: 'youtube', content: 'Modern quants use Random Forests, Gradient Boosting, and LSTMs (Long Short-Term Memory) to process sequential time-series data. These models can find non-linear correlations that human analysts might miss in massive datasets.' },
-      { id: 'ai2', title: 'NLP & News Sentiment', videoUrl: 'https://www.youtube.com/embed/1vCnyBdU2yM', videoType: 'youtube', content: 'Natural Language Processing allows computers to "read" millions of news articles and tweets per second. By assigning sentiment scores to text, AI can predict market reactions to news events before they are even fully understood by humans.' },
-      { id: 'ai3', title: 'Reinforcement Learning Agents', videoUrl: 'https://www.youtube.com/embed/Q3nXF9h7_EE', videoType: 'youtube', content: 'In RL, an AI agent learns to trade by being rewarded for profitable moves and penalized for losses. Over millions of simulated trades, the agent develops strategies for execution, market making, and portfolio rebalancing autonomously.' },
-      { id: 'ai4', title: 'The Future of Fintech', videoUrl: 'https://www.youtube.com/embed/lnEw7OOp1LU', videoType: 'youtube', content: 'From Decentralized Finance (DeFi) to automated AI-advisors, the friction of traditional banking is being removed. Stay ahead by understanding how blockchain and AI converge to create a more transparent and efficient financial system.' }
+      {
+        id: 'ai1',
+        title: 'Machine Learning Models',
+        aiSummary: 'LSTMs and Gradient Boosting find hidden correlations in time-series data. AI doesn’t predict the future; it identifies repeating high-probability patterns.',
+        diagramData: {
+          nodes: [
+            { id: 1, label: 'Time-Series Data', type: 'source' },
+            { id: 2, label: 'Neural Layer', type: 'process' },
+            { id: 3, label: 'Feature Extraction', type: 'process' },
+            { id: 4, label: 'Prediction Output', type: 'result' }
+          ],
+          edges: [{ from: 1, to: 2 }, { from: 2, to: 3 }, { from: 3, to: 4 }]
+        },
+        content: 'Modern quants use Random Forests, Gradient Boosting, and LSTMs to process sequential time-series data.'
+      },
+      {
+        id: 'ai2',
+        title: 'NLP Sentiment Analysis',
+        aiSummary: 'AI "reads" millions of signals per second. By quantifying language patterns, it can spot panic or euphoria across global markets long before humans.',
+        diagramData: {
+          nodes: [
+            { id: 1, label: 'Unstructured Text', type: 'source' },
+            { id: 2, label: 'Tokenization', type: 'process' },
+            { id: 3, label: 'Context Weight', type: 'multiplier' },
+            { id: 4, label: 'Sentiment Index', type: 'result' }
+          ],
+          edges: [{ from: 1, to: 2 }, { from: 2, to: 3 }, { from: 3, to: 4 }]
+        },
+        content: 'Natural Language Processing allows computers to "read" millions of news articles and tweets per second.'
+      }
     ],
     quizIds: [21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
   }
@@ -390,26 +531,26 @@ export const PORTFOLIO_DATA = {
 
 // User-Specific Data Mapping
 export const USER_ACCOUNTS = [
-  { "id": 1, "username": "user1", "email": "user1@example.com", "password": "password1", "role": "employee", "tasks": [{ "id": 101, "title": "Complete onboarding", "status": "pending" }] },
-  { "id": 2, "username": "user2", "email": "user2@example.com", "password": "password2", "role": "admin", "tasks": [{ "id": 201, "title": "Review reports", "status": "in-progress" }] },
-  { "id": 3, "username": "user3", "email": "user3@example.com", "password": "password3", "role": "employee", "tasks": [{ "id": 301, "title": "Update profile", "status": "completed" }] },
-  { "id": 4, "username": "user4", "email": "user4@example.com", "password": "password4", "role": "employee", "tasks": [{ "id": 401, "title": "Submit timesheet", "status": "pending" }] },
-  { "id": 5, "username": "user5", "email": "user5@example.com", "password": "password5", "role": "admin", "tasks": [{ "id": 501, "title": "Approve leave requests", "status": "pending" }] },
-  { "id": 6, "username": "user6", "email": "user6@example.com", "password": "password6", "role": "employee", "tasks": [{ "id": 601, "title": "Fix dashboard bug", "status": "in-progress" }] },
-  { "id": 7, "username": "user7", "email": "user7@example.com", "password": "password7", "role": "employee", "tasks": [{ "id": 701, "title": "Deploy app to Vercel", "status": "pending" }] },
-  { "id": 8, "username": "user8", "email": "user8@example.com", "password": "password8", "role": "admin", "tasks": [{ "id": 801, "title": "Monitor system logs", "status": "completed" }] },
-  { "id": 9, "username": "user9", "email": "user9@example.com", "password": "password9", "role": "employee", "tasks": [{ "id": 901, "title": "Prepare presentation", "status": "in-progress" }] },
-  { "id": 10, "username": "user10", "email": "user10@example.com", "password": "password10", "role": "employee", "tasks": [{ "id": 1001, "title": "Update documentation", "status": "pending" }] },
-  { "id": 11, "username": "user11", "email": "user11@example.com", "password": "password11", "role": "employee", "tasks": [{ "id": 1101, "title": "Test new feature", "status": "pending" }] },
-  { "id": 12, "username": "user12", "email": "user12@example.com", "password": "password12", "role": "admin", "tasks": [{ "id": 1201, "title": "Audit user accounts", "status": "completed" }] },
-  { "id": 13, "username": "user13", "email": "user13@example.com", "password": "password13", "role": "employee", "tasks": [{ "id": 1301, "title": "Fix login bug", "status": "in-progress" }] },
-  { "id": 14, "username": "user14", "email": "user14@example.com", "password": "password14", "role": "employee", "tasks": [{ "id": 1401, "title": "Prepare weekly report", "status": "pending" }] },
-  { "id": 15, "username": "user15", "email": "user15@example.com", "password": "password15", "role": "admin", "tasks": [{ "id": 1501, "title": "Approve new hires", "status": "pending" }] },
-  { "id": 16, "username": "user16", "email": "user16@example.com", "password": "password16", "role": "employee", "tasks": [{ "id": 1601, "title": "Update UI design", "status": "completed" }] },
-  { "id": 17, "username": "user17", "email": "user17@example.com", "password": "password17", "role": "employee", "tasks": [{ "id": 1701, "title": "Fix API integration", "status": "pending" }] },
-  { "id": 18, "username": "user18", "email": "user18@example.com", "password": "password18", "role": "admin", "tasks": [{ "id": 1801, "title": "Review project budget", "status": "in-progress" }] },
-  { "id": 19, "username": "user19", "email": "user19@example.com", "password": "password19", "role": "employee", "tasks": [{ "id": 1901, "title": "Write test cases", "status": "pending" }] },
-  { "id": 20, "username": "user20", "email": "user20@example.com", "password": "password20", "role": "employee", "tasks": [{ "id": 2001, "title": "Deploy staging build", "status": "completed" }] }
+  { "id": 1, "username": "user01", "password": "pwdUser01!", "action": "login", "role": "employee", "tasks": ["Check inbox", "Update profile"] },
+  { "id": 2, "username": "user02", "password": "pwdUser02!", "action": "login", "role": "employee", "tasks": ["Review code", "Fix bugs"] },
+  { "id": 3, "username": "user03", "password": "pwdUser03!", "action": "login", "role": "employee", "tasks": ["Prepare presentation", "Attend meeting"] },
+  { "id": 4, "username": "user04", "password": "pwdUser04!", "action": "login", "role": "employee", "tasks": ["Design UI", "Test components"] },
+  { "id": 5, "username": "user05", "password": "pwdUser05!", "action": "login", "role": "admin", "tasks": ["Deploy app", "Monitor logs"] },
+  { "id": 6, "username": "user06", "password": "pwdUser06!", "action": "login", "role": "employee", "tasks": ["Write docs", "Update wiki"] },
+  { "id": 7, "username": "user07", "password": "pwdUser07!", "action": "login", "role": "employee", "tasks": ["Check emails", "Plan sprint"] },
+  { "id": 8, "username": "user08", "password": "pwdUser08!", "action": "login", "role": "admin", "tasks": ["Fix CSS", "Push commits"] },
+  { "id": 9, "username": "user09", "password": "pwdUser09!", "action": "login", "role": "employee", "tasks": ["Review PRs", "Merge branches"] },
+  { "id": 10, "username": "user10", "password": "pwdUser10!", "action": "login", "role": "employee", "tasks": ["Test API", "Update endpoints"] },
+  { "id": 11, "username": "user11", "password": "pwdUser11!", "action": "login", "role": "employee", "tasks": ["Optimize queries", "Backup DB"] },
+  { "id": 12, "username": "user12", "password": "pwdUser12!", "action": "login", "role": "admin", "tasks": ["Create mockups", "Review UX"] },
+  { "id": 13, "username": "user13", "password": "pwdUser13!", "action": "login", "role": "employee", "tasks": ["Configure server", "Check uptime"] },
+  { "id": 14, "username": "user14", "password": "pwdUser14!", "action": "login", "role": "employee", "tasks": ["Write tests", "Run CI/CD"] },
+  { "id": 15, "username": "user15", "password": "pwdUser15!", "action": "login", "role": "admin", "tasks": ["Update schema", "Validate data"] },
+  { "id": 16, "username": "user16", "password": "pwdUser16!", "action": "login", "role": "employee", "tasks": ["Draft emails", "Schedule meeting"] },
+  { "id": 17, "username": "user17", "password": "pwdUser17!", "action": "login", "role": "employee", "tasks": ["Analyze metrics", "Prepare report"] },
+  { "id": 18, "username": "user18", "password": "pwdUser18!", "action": "login", "role": "admin", "tasks": ["Update tasks", "Check dashboard"] },
+  { "id": 19, "username": "user19", "password": "pwdUser19!", "action": "login", "role": "employee", "tasks": ["Debug errors", "Push hotfix"] },
+  { "id": 20, "username": "user20", "password": "pwdUser20!", "action": "login", "role": "employee", "tasks": ["Plan release", "Notify team"] }
 ];
 
 export const USER_PORTFOLIOS = {
@@ -452,24 +593,24 @@ export const USER_PORTFOLIOS = {
 };
 
 export const USER_PORTFOLIO_STATS = [
-  { "id": 1, "username": "user01", "invested_money": 20000, "spent_on_stocks": 15000, "performance": "positive", "gains_loss": 1800, "assets_allocations": { "stocks": 60, "bonds": 20, "cash": 10, "crypto": 10 } },
-  { "id": 2, "username": "user02", "invested_money": 12000, "spent_on_stocks": 9000, "performance": "negative", "gains_loss": -600, "assets_allocations": { "stocks": 50, "bonds": 30, "cash": 20 } },
-  { "id": 3, "username": "user03", "invested_money": 25000, "spent_on_stocks": 20000, "performance": "positive", "gains_loss": 3200, "assets_allocations": { "stocks": 70, "mutual_funds": 15, "cash": 10, "crypto": 5 } },
-  { "id": 4, "username": "user04", "invested_money": 8000, "spent_on_stocks": 6000, "performance": "negative", "gains_loss": -400, "assets_allocations": { "stocks": 40, "bonds": 40, "cash": 20 } },
-  { "id": 5, "username": "user05", "invested_money": 15000, "spent_on_stocks": 12000, "performance": "positive", "gains_loss": 950, "assets_allocations": { "stocks": 55, "bonds": 25, "crypto": 10, "cash": 10 } },
-  { "id": 6, "username": "user06", "invested_money": 30000, "spent_on_stocks": 25000, "performance": "positive", "gains_loss": 4100, "assets_allocations": { "stocks": 65, "mutual_funds": 20, "real_estate": 10, "cash": 5 } },
-  { "id": 7, "username": "user07", "invested_money": 10000, "spent_on_stocks": 7000, "performance": "negative", "gains_loss": -500, "assets_allocations": { "stocks": 45, "bonds": 35, "cash": 20 } },
-  { "id": 8, "username": "user08", "invested_money": 18000, "spent_on_stocks": 14000, "performance": "positive", "gains_loss": 1600, "assets_allocations": { "stocks": 60, "mutual_funds": 20, "crypto": 10, "cash": 10 } },
-  { "id": 9, "username": "user09", "invested_money": 9500, "spent_on_stocks": 8000, "performance": "negative", "gains_loss": -700, "assets_allocations": { "stocks": 50, "bonds": 30, "cash": 20 } },
-  { "id": 10, "username": "user10", "invested_money": 26000, "spent_on_stocks": 21000, "performance": "positive", "gains_loss": 3500, "assets_allocations": { "stocks": 70, "mutual_funds": 15, "real_estate": 10, "cash": 5 } },
-  { "id": 11, "username": "user11", "invested_money": 11000, "spent_on_stocks": 9000, "performance": "positive", "gains_loss": 800, "assets_allocations": { "stocks": 55, "bonds": 25, "cash": 20 } },
-  { "id": 12, "username": "user12", "invested_money": 6000, "spent_on_stocks": 5000, "performance": "negative", "gains_loss": -350, "assets_allocations": { "stocks": 40, "bonds": 40, "cash": 20 } },
-  { "id": 13, "username": "user13", "invested_money": 20000, "spent_on_stocks": 16000, "performance": "positive", "gains_loss": 2700, "assets_allocations": { "stocks": 65, "mutual_funds": 20, "crypto": 10, "cash": 5 } },
-  { "id": 14, "username": "user14", "invested_money": 7500, "spent_on_stocks": 6000, "performance": "negative", "gains_loss": -400, "assets_allocations": { "stocks": 45, "bonds": 35, "cash": 20 } },
-  { "id": 15, "username": "user15", "invested_money": 14000, "spent_on_stocks": 11000, "performance": "positive", "gains_loss": 1200, "assets_allocations": { "stocks": 55, "mutual_funds": 25, "cash": 20 } },
-  { "id": 16, "username": "user16", "invested_money": 27000, "spent_on_stocks": 22000, "performance": "positive", "gains_loss": 3900, "assets_allocations": { "stocks": 70, "real_estate": 15, "mutual_funds": 10, "cash": 5 } },
-  { "id": 17, "username": "user17", "invested_money": 9000, "spent_on_stocks": 7000, "performance": "negative", "gains_loss": -550, "assets_allocations": { "stocks": 50, "bonds": 30, "cash": 20 } },
-  { "id": 18, "username": "user18", "invested_money": 16000, "spent_on_stocks": 13000, "performance": "positive", "gains_loss": 1750, "assets_allocations": { "stocks": 60, "mutual_funds": 20, "crypto": 10, "cash": 10 } },
-  { "id": 19, "username": "user19", "invested_money": 13000, "spent_on_stocks": 10000, "performance": "negative", "gains_loss": -700, "assets_allocations": { "stocks": 50, "bonds": 30, "cash": 20 } },
-  { "id": 20, "username": "user20", "invested_money": 21000, "spent_on_stocks": 17000, "performance": "positive", "gains_loss": 3100, "assets_allocations": { "stocks": 65, "mutual_funds": 20, "real_estate": 10, "cash": 5 } }
+  { "id": 1, "username": "user01", "invested_money": 20000, "spent_on_stocks": 15000, "performance": "positive", "gains_loss": 1800, "personality": "Risk Taker", "assets_allocations": { "stocks": 60, "bonds": 20, "cash": 10, "crypto": 10 } },
+  { "id": 2, "username": "user02", "invested_money": 12000, "spent_on_stocks": 9000, "performance": "negative", "gains_loss": -600, "personality": "Conservative", "assets_allocations": { "stocks": 50, "bonds": 30, "cash": 20 } },
+  { "id": 3, "username": "user03", "invested_money": 25000, "spent_on_stocks": 20000, "performance": "positive", "gains_loss": 3200, "personality": "Aggressive", "assets_allocations": { "stocks": 70, "mutual_funds": 15, "cash": 10, "crypto": 5 } },
+  { "id": 4, "username": "user04", "invested_money": 8000, "spent_on_stocks": 6000, "performance": "negative", "gains_loss": -400, "personality": "Conservative", "assets_allocations": { "stocks": 40, "bonds": 40, "cash": 20 } },
+  { "id": 5, "username": "user05", "invested_money": 15000, "spent_on_stocks": 12000, "performance": "positive", "gains_loss": 950, "personality": "Aggressive", "assets_allocations": { "stocks": 55, "bonds": 25, "crypto": 10, "cash": 10 } },
+  { "id": 6, "username": "user06", "invested_money": 30000, "spent_on_stocks": 25000, "performance": "positive", "gains_loss": 4100, "personality": "Risk Taker", "assets_allocations": { "stocks": 65, "mutual_funds": 20, "real_estate": 10, "cash": 5 } },
+  { "id": 7, "username": "user07", "invested_money": 10000, "spent_on_stocks": 7000, "performance": "negative", "gains_loss": -500, "personality": "Conservative", "assets_allocations": { "stocks": 45, "bonds": 35, "cash": 20 } },
+  { "id": 8, "username": "user08", "invested_money": 18000, "spent_on_stocks": 14000, "performance": "positive", "gains_loss": 1600, "personality": "Aggressive", "assets_allocations": { "stocks": 60, "mutual_funds": 20, "crypto": 10, "cash": 10 } },
+  { "id": 9, "username": "user09", "invested_money": 9500, "spent_on_stocks": 8000, "performance": "negative", "gains_loss": -700, "personality": "Conservative", "assets_allocations": { "stocks": 50, "bonds": 30, "cash": 20 } },
+  { "id": 10, "username": "user10", "invested_money": 26000, "spent_on_stocks": 21000, "performance": "positive", "gains_loss": 3500, "personality": "Risk Taker", "assets_allocations": { "stocks": 70, "mutual_funds": 15, "real_estate": 10, "cash": 5 } },
+  { "id": 11, "username": "user11", "invested_money": 11000, "spent_on_stocks": 9000, "performance": "positive", "gains_loss": 800, "personality": "Balanced", "assets_allocations": { "stocks": 55, "bonds": 25, "cash": 20 } },
+  { "id": 12, "username": "user12", "invested_money": 6000, "spent_on_stocks": 5000, "performance": "negative", "gains_loss": -350, "personality": "Conservative", "assets_allocations": { "stocks": 40, "bonds": 40, "cash": 20 } },
+  { "id": 13, "username": "user13", "invested_money": 20000, "spent_on_stocks": 16000, "performance": "positive", "gains_loss": 2700, "personality": "Risk Taker", "assets_allocations": { "stocks": 65, "mutual_funds": 20, "crypto": 10, "cash": 5 } },
+  { "id": 14, "username": "user14", "invested_money": 7500, "spent_on_stocks": 6000, "performance": "negative", "gains_loss": -400, "personality": "Balanced", "assets_allocations": { "stocks": 45, "bonds": 35, "cash": 20 } },
+  { "id": 15, "username": "user15", "invested_money": 14000, "spent_on_stocks": 11000, "performance": "positive", "gains_loss": 1200, "personality": "Aggressive", "assets_allocations": { "stocks": 55, "mutual_funds": 25, "cash": 20 } },
+  { "id": 16, "username": "user16", "invested_money": 27000, "spent_on_stocks": 22000, "performance": "positive", "gains_loss": 3900, "personality": "Risk Taker", "assets_allocations": { "stocks": 70, "real_estate": 15, "mutual_funds": 10, "cash": 5 } },
+  { "id": 17, "username": "user17", "invested_money": 9000, "spent_on_stocks": 7000, "performance": "negative", "gains_loss": -550, "personality": "Conservative", "assets_allocations": { "stocks": 50, "bonds": 30, "cash": 20 } },
+  { "id": 18, "username": "user18", "invested_money": 16000, "spent_on_stocks": 13000, "performance": "positive", "gains_loss": 1750, "personality": "Aggressive", "assets_allocations": { "stocks": 60, "mutual_funds": 20, "crypto": 10, "cash": 10 } },
+  { "id": 19, "username": "user19", "invested_money": 13000, "spent_on_stocks": 10000, "performance": "negative", "gains_loss": -700, "personality": "Balanced", "assets_allocations": { "stocks": 50, "bonds": 30, "cash": 20 } },
+  { "id": 20, "username": "user20", "invested_money": 21000, "spent_on_stocks": 17000, "performance": "positive", "gains_loss": 3100, "personality": "Risk Taker", "assets_allocations": { "stocks": 65, "mutual_funds": 20, "real_estate": 10, "cash": 5 } }
 ];

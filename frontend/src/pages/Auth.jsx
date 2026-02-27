@@ -41,20 +41,14 @@ const Auth = ({ onLogin }) => {
                         id: mockUser.id,
                         username: mockUser.username,
                         role: mockUser.role,
-                        tasks: mockUser.tasks.map((t, i) => ({ id: i + 100, title: t.title || t, status: t.status || 'pending' }))
+                        tasks: mockUser.tasks.map((t, i) => ({
+                            id: i + 100,
+                            title: typeof t === 'string' ? t : (t.title || 'Task'),
+                            status: typeof t === 'string' ? 'pending' : (t.status || 'pending')
+                        }))
                     });
                 } else {
-                    // Dynamic/Flexible login fallback: Allow any credentials if no mock match found
-                    console.warn("Backend unreachable and no mock match, using dynamic login");
-                    onLogin({
-                        id: Math.floor(Math.random() * 10000),
-                        username: name,
-                        role: 'employee',
-                        tasks: [
-                            { id: 101, title: 'Explore the platform', status: 'pending' },
-                            { id: 102, title: 'Check market trends', status: 'pending' }
-                        ]
-                    });
+                    setError('Invalid username or password');
                 }
             }
         } else {

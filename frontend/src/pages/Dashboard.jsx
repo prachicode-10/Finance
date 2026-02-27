@@ -1,45 +1,57 @@
+import React, { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, DollarSign, Activity, BarChart3, PieChart as PieIcon, Wallet } from 'lucide-react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { MOCK_STOCKS, USER_PORTFOLIOS } from '../data/mockData';
+import { MOCK_STOCKS, MOCK_NEWS, USER_PORTFOLIOS, USER_PORTFOLIO_STATS } from '../data/mockData';
 import { AIService } from '../services/aiService';
 
 const Dashboard = ({ user, portfolio, onNavigate }) => {
-    const sentiment = AIService.getSentimentAnalysis();
+    const [sentiment, setSentiment] = useState({ overall: 'Loading...', score: 0 });
+
+    useEffect(() => {
+        const fetchSentiment = async () => {
+            const data = await AIService.getSentimentAnalysis(MOCK_NEWS);
+            setSentiment(data);
+        };
+        fetchSentiment();
+    }, []);
 
     // Determine user name for lookups
     const username = user?.username || user || 'Default';
 
-    // Virtual Portfolio Generator (ensures EVERY name gets unique values)
-    const getDynamicPortfolio = (name, role) => {
-        const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        // Use role-based baseline if available, otherwise 'Default'
-        const baseline = USER_PORTFOLIOS[role] || USER_PORTFOLIOS['Default'];
-
-        // Deterministic variation based on name
-        const balanceVariance = (hash * 137) % 15000;
-        const pnlVariance = ((hash * 7) % 80) / 10 - 4; // -4% to +4%
-
-        return {
-            ...baseline,
-            totalBalance: baseline.totalBalance + balanceVariance,
-            pnlPercentage: Number((baseline.pnlPercentage + pnlVariance).toFixed(1)),
-        };
-    };
-
-    // If parent passed a live portfolio state, prefer that, otherwise fall back to global map
-    const userPortfolio = portfolio || USER_PORTFOLIOS[username] || getDynamicPortfolio(username, user?.role);
+    // Prefer parent passed portfolio, then fallback to mock data / dynamic generation
+    const userPortfolio = portfolio || (user ? USER_PORTFOLIOS[username] : USER_PORTFOLIOS['Default']);
 
     return (
         <div className="dashboard-view">
-            <header style={{ marginBottom: '2.5rem' }}>
-                <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Market Overview</h1>
-                <p style={{ color: 'var(--text-muted)' }}>Welcome back, here's what's happening today.</p>
-                {user?.id && (
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>User ID: {user.id}</div>
-                )}
-                {portfolio && (
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-                        Activity: {portfolio.recentTransactions.length > 5 ? 'High' : portfolio.recentTransactions.length > 0 ? 'Moderate' : 'Low'}
+            <header style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                    <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Market Overview</h1>
+                    <p style={{ color: 'var(--text-muted)' }}>Welcome back, here's what's happening today.</p>
+                    {user?.id && (
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>User ID: {user.id}</div>
+                    )}
+                    {portfolio && (
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                            Activity: <span style={{ color: portfolio.recentTransactions.length > 5 ? 'var(--accent-green)' : 'var(--secondary)' }}>
+                                {portfolio.recentTransactions.length > 5 ? 'High' : portfolio.recentTransactions.length > 0 ? 'Moderate' : 'Low'}
+                            </span>
+                        </div>
+                    )}
+                </div>
+                {userPortfolio.personality && (
+                    <div style={{
+                        padding: '8px 16px',
+                        background: 'rgba(99, 102, 241, 0.1)',
+                        border: '1px solid var(--secondary)',
+                        borderRadius: '30px',
+                        color: 'var(--secondary)',
+                        fontWeight: '600',
+                        fontSize: '0.85rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                    }}>
+                        <Activity size={16} /> {userPortfolio.personality} Strategy
                     </div>
                 )}
             </header>
@@ -127,33 +139,71 @@ const Dashboard = ({ user, portfolio, onNavigate }) => {
             )}
 
             <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 2fr', gap: '1.5rem', marginTop: '1.5rem' }}>
-                <div className="glass-card" style={{ padding: '1.5rem' }}>
-                    <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <PieIcon size={18} color="var(--primary)" /> Portfolio Allocation
-                    </h3>
-                    <div style={{ height: '240px', width: '100%' }}>
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={userPortfolio.assets}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={60}
-                                    outerRadius={80}
-                                    paddingAngle={5}
-                                    dataKey="allocation"
-                                    nameKey="symbol"
-                                >
-                                    {userPortfolio.assets.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={['var(--primary)', 'var(--secondary)', '#ffab00', 'var(--accent-green)'][index % 4]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip
-                                    contentStyle={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', borderRadius: '8px' }}
-                                />
-                                <Legend />
-                            </PieChart>
-                        </ResponsiveContainer>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                    <div className="glass-card" style={{ padding: '1.5rem' }}>
+                        <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <PieIcon size={18} color="var(--primary)" /> Portfolio Allocation
+                        </h3>
+                        <div style={{ height: '240px', width: '100%' }}>
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={userPortfolio.assets}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={80}
+                                        paddingAngle={5}
+                                        dataKey="allocation"
+                                        nameKey="symbol"
+                                    >
+                                        {userPortfolio.assets.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={['var(--primary)', 'var(--secondary)', '#ffab00', 'var(--accent-green)'][index % 4]} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip
+                                        contentStyle={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', borderRadius: '8px' }}
+                                    />
+                                    <Legend />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
+
+                    <div className="glass-card" style={{ padding: '1.5rem' }}>
+                        <h3 style={{ marginBottom: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <TrendingUp size={18} color="var(--accent-green)" /> For You: {userPortfolio.personality}
+                        </h3>
+                        <div style={{ display: 'grid', gap: '10px' }}>
+                            {MOCK_STOCKS.filter(s => {
+                                if (userPortfolio.personality === 'Risk Taker') return ['BTC', 'TSLA', 'ETH'].includes(s.symbol);
+                                if (userPortfolio.personality === 'Aggressive') return ['NVDA', 'MSFT', 'TSLA'].includes(s.symbol);
+                                if (userPortfolio.personality === 'Balanced') return ['AAPL', 'MSFT', 'VOO'].includes(s.symbol);
+                                if (userPortfolio.personality === 'Conservative') return ['VOO', 'BND'].includes(s.symbol);
+                                return true;
+                            }).slice(0, 2).map(stock => (
+                                <div key={stock.symbol} style={{
+                                    padding: '10px',
+                                    background: 'rgba(255,255,255,0.02)',
+                                    borderRadius: '8px',
+                                    border: '1px solid var(--card-border)',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                                }}>
+                                    <div>
+                                        <div style={{ fontSize: '0.85rem', fontWeight: '600' }}>{stock.symbol}</div>
+                                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Trend: {stock.trend}</div>
+                                    </div>
+                                    <button
+                                        onClick={() => onNavigate && onNavigate('portfolio')}
+                                        style={{ background: 'transparent', border: 'none', color: 'var(--primary)', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer' }}
+                                    >
+                                        TRADE
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
 

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import {
     CheckCircle2, XCircle, HelpCircle, ArrowRight, RotateCcw,
-    BookOpen, TrendingUp, Brain, PlayCircle, ArrowLeft, Video, ExternalLink, Download
+    BookOpen, TrendingUp, Brain, ArrowLeft, Zap, Activity
 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { QUIZ_DATA, COURSES_DATA } from '../data/mockData';
+import AIFlowchart from '../components/AIFlowchart';
 
 const LearningCenter = () => {
     const [view, setView] = useState('courses'); // 'courses', 'details', 'quiz'
@@ -68,23 +69,27 @@ const LearningCenter = () => {
     // Sub-components
     const CourseList = () => (
         <div className="learning-center">
-            <header style={{ marginBottom: '2.5rem' }}>
-                <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Finance Academy</h1>
-                <p style={{ color: 'var(--text-muted)' }}>Master the markets with our structured learning paths.</p>
+            <header style={{ marginBottom: '3rem' }}>
+                <div className="flex items-center gap-3 mb-2">
+                    <Zap className="text-primary" size={24} />
+                    <span className="text-xs font-black uppercase tracking-[0.3em] text-primary">Neural Academy</span>
+                </div>
+                <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>Financial Mastery</h1>
+                <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>AI-powered structured learning paths for the modern market.</p>
             </header>
 
-            <div className="courses-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {COURSES_DATA.map(course => (
-                    <div key={course.id} className="glass-card course-card" style={{ padding: '2rem' }}>
-                        <div className="icon-box" style={{ marginBottom: '1.5rem', background: 'rgba(99, 102, 241, 0.1)', color: 'var(--secondary)', width: '50px', height: '50px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            {course.icon === 'BookOpen' && <BookOpen size={24} />}
-                            {course.icon === 'TrendingUp' && <TrendingUp size={24} />}
-                            {course.icon === 'Brain' && <Brain size={24} />}
+                    <div key={course.id} className="glass-card flex flex-col p-8 group hover:border-primary/30 transition-all duration-500">
+                        <div className="w-14 h-14 bg-indigo-500/10 text-secondary rounded-2xl flex items-center justify-center mb-6 group-hover:bg-indigo-500/20 group-hover:scale-110 transition-all duration-500">
+                            {course.icon === 'BookOpen' && <BookOpen size={28} />}
+                            {course.icon === 'TrendingUp' && <TrendingUp size={28} />}
+                            {course.icon === 'Brain' && <Brain size={28} />}
                         </div>
-                        <h3>{course.title}</h3>
-                        <p style={{ color: 'var(--text-muted)', margin: '1rem 0 2rem', fontSize: '0.95rem' }}>{course.description}</p>
-                        <button className="btn-primary" style={{ width: '100%' }} onClick={() => viewCourseDetails(course)}>
-                            Start Learning
+                        <h3 className="text-xl mb-3">{course.title}</h3>
+                        <p className="text-sm text-white/50 leading-relaxed mb-8 flex-1">{course.description}</p>
+                        <button className="btn-primary w-full py-4 tracking-widest text-xs font-black uppercase" onClick={() => viewCourseDetails(course)}>
+                            Access Module
                         </button>
                     </div>
                 ))}
@@ -94,58 +99,48 @@ const LearningCenter = () => {
 
     const CourseDetails = () => (
         <div className="course-details">
-            <button className="nav-item" onClick={goBack} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2rem', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
-                <ArrowLeft size={20} /> Back to Academy
+            <button className="flex items-center gap-2 mb-8 text-white/40 hover:text-white transition-colors text-sm font-bold uppercase tracking-tighter" onClick={goBack}>
+                <ArrowLeft size={18} /> Exit Module
             </button>
-            <div className="glass-card" style={{ padding: '2.5rem' }}>
-                <h2 style={{ marginBottom: '1rem' }}>{selectedCourse.title}</h2>
-                <p style={{ color: 'var(--text-muted)', marginBottom: '2.5rem' }}>{selectedCourse.description}</p>
 
-                <div className="modules-list" style={{ display: 'grid', gap: '1.5rem' }}>
+            <div className="glass-card p-10">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 border-b border-white/5 pb-8">
+                    <div>
+                        <h2 className="text-3xl mb-2">{selectedCourse.title}</h2>
+                        <p className="text-white/40 max-w-2xl leading-relaxed">{selectedCourse.description}</p>
+                    </div>
+                    <div className="flex items-center gap-2 px-5 py-3 bg-primary/10 border border-primary/20 rounded-2xl">
+                        <Activity size={16} className="text-primary animate-pulse" />
+                        <span className="text-[10px] font-black text-primary uppercase tracking-widest">Live AI Optimization active</span>
+                    </div>
+                </div>
+
+                <div className="space-y-16">
                     {selectedCourse.modules.map((module, idx) => (
-                        <div key={module.id} className="module-item" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '16px', border: '1px solid var(--card-border)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem' }}>
-                                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--primary)', color: 'black', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '0.8rem' }}>
-                                    {idx + 1}
+                        <div key={module.id} className="relative">
+                            <div className="flex items-start gap-8">
+                                <div className="hidden md:flex min-w-[48px] h-[48px] rounded-2xl bg-white/5 border border-white/10 text-white/20 items-center justify-center text-lg font-black italic">
+                                    0{idx + 1}
                                 </div>
-                                <h4 style={{ margin: 0 }}>{module.title}</h4>
-                            </div>
-                            <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', lineHeight: '1.6', marginBottom: '1.5rem' }}>{module.content}</p>
+                                <div className="flex-1">
+                                    <h4 className="text-2xl mb-4 text-white hover:text-primary transition-colors cursor-default">{module.title}</h4>
+                                    <p className="text-md text-white/60 leading-loose mb-10 max-w-4xl">{module.content}</p>
 
-                            {module.videoUrl && (
-                                <div className="video-section" style={{ marginTop: '1.5rem', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--card-border)' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', padding: '12px 15px', background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid var(--card-border)' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <Video size={16} color="var(--primary)" />
-                                            <span style={{ fontSize: '0.85rem', fontWeight: '600' }}>Video Explanation</span>
-                                            {module.videoType === 'ai' && (
-                                                <span style={{ fontSize: '0.7rem', fontWeight: '700', padding: '2px 8px', background: 'rgba(0, 255, 163, 0.15)', color: 'var(--accent-green)', borderRadius: '4px', textTransform: 'uppercase' }}>AI Generated</span>
-                                            )}
-                                        </div>
-                                        <a href={module.videoUrl.replace('/embed/', '/watch?v=')} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', color: 'var(--primary)', cursor: 'pointer', textDecoration: 'none' }}>
-                                            <ExternalLink size={14} /> Watch on YouTube
-                                        </a>
-                                    </div>
-                                    <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, background: '#000' }}>
-                                        <iframe
-                                            src={`${module.videoUrl}?origin=${window.location.origin}&rel=0&modestbranding=1`}
-                                            title={module.title}
-                                            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                            allowFullScreen
-                                        ></iframe>
+                                    <div className="mt-8">
+                                        <AIFlowchart data={module.diagramData} />
                                     </div>
                                 </div>
-                            )}
+                            </div>
                         </div>
                     ))}
                 </div>
 
                 {selectedCourse.quizIds.length > 0 && (
-                    <div style={{ marginTop: '3rem', textAlign: 'center' }}>
-                        <button className="btn-primary" onClick={() => startQuiz(selectedCourse)} style={{ padding: '1rem 2.5rem' }}>
-                            Take the Assessment
+                    <div className="mt-20 pt-12 border-t border-white/5 text-center">
+                        <button className="btn-primary px-12 py-5 text-sm" onClick={() => startQuiz(selectedCourse)}>
+                            VERIFY KNOWLEDGE BASE
                         </button>
+                        <p className="mt-4 text-[10px] font-bold text-white/20 uppercase tracking-[0.4em]">Requires 70% proficiency to pass</p>
                     </div>
                 )}
             </div>
@@ -157,11 +152,11 @@ const LearningCenter = () => {
 
         if (quizComplete) {
             return (
-                <div className="glass-card" style={{ textAlign: 'center', padding: '2.5rem' }}>
-                    <CheckCircle2 size={50} color="var(--primary)" style={{ marginBottom: '1rem' }} />
-                    <h2 style={{ marginBottom: '2rem' }}>Assessment Results</h2>
+                <div className="glass-card text-center p-12">
+                    <CheckCircle2 size={64} className="text-primary mx-auto mb-6" />
+                    <h2 className="text-3xl mb-8">Assessment Analyzed</h2>
 
-                    <div style={{ height: '300px', width: '100%', marginBottom: '2rem' }}>
+                    <div className="h-[300px] w-full mb-8">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
@@ -174,34 +169,33 @@ const LearningCenter = () => {
                                     paddingAngle={5}
                                     dataKey="value"
                                 >
-                                    <Cell fill="var(--accent-green)" />
-                                    <Cell fill="var(--accent-red)" />
+                                    <Cell fill="var(--primary)" />
+                                    <Cell fill="var(--accent-red)" opacity={0.3} />
                                 </Pie>
                                 <Tooltip
-                                    contentStyle={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)', borderRadius: '8px' }}
-                                    itemStyle={{ color: 'var(--text-main)' }}
+                                    contentStyle={{ background: '#0f172a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px' }}
+                                    itemStyle={{ color: '#fff' }}
                                 />
                                 <Legend verticalAlign="bottom" height={36} />
                             </PieChart>
                         </ResponsiveContainer>
                     </div>
 
-                    <p style={{ margin: '1rem 0', fontSize: '1.2rem', fontWeight: '600' }}>
-                        You scored {score} out of {currentQuizData.length}
+                    <p className="text-2xl font-bold text-white mb-2">
+                        Neural Score: {Math.round((score / currentQuizData.length) * 100)}%
+                    </p>
+                    <p className="text-white/40 mb-10">
+                        {score === currentQuizData.length ? "Perfect calibration. Your market understanding is elite." :
+                            score > currentQuizData.length / 2 ? "Solid comprehension. Further data cycles recommended." :
+                                "Insufficient proficiency. Re-evaluate core modules."}
                     </p>
 
-                    <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>
-                        {score === currentQuizData.length ? "Perfect score! You're a market expert." :
-                            score > currentQuizData.length / 2 ? "Great job! Keep refining your skills." :
-                                "Keep studying! The market is a lifelong teacher."}
-                    </p>
-
-                    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                        <button className="btn-outline" onClick={resetQuiz} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <RotateCcw size={20} /> Retake Quiz
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button className="px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-bold uppercase transition-all flex items-center justify-center gap-2" onClick={resetQuiz}>
+                            <RotateCcw size={16} /> Re-Calculate
                         </button>
-                        <button className="btn-primary" onClick={goBack}>
-                            Return to Course
+                        <button className="btn-primary px-10 py-4 text-xs" onClick={goBack}>
+                            RETURN TO SYLLABUS
                         </button>
                     </div>
                 </div>
@@ -212,71 +206,74 @@ const LearningCenter = () => {
 
         return (
             <div className="quiz-container">
-                <button className="nav-item" onClick={goBack} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2rem', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
-                    <ArrowLeft size={20} /> Exit Quiz
+                <button className="flex items-center gap-2 mb-8 text-white/40 hover:text-white transition-colors text-sm font-bold uppercase tracking-tighter" onClick={goBack}>
+                    <ArrowLeft size={18} /> ABORT ASSESSMENT
                 </button>
-                <div className="glass-card" style={{ padding: '2.5rem' }}>
-                    <div style={{ marginBottom: '2.5rem' }}>
-                        <span className="badge-ai">{selectedCourse.title}</span>
-                        <h3 style={{ fontSize: '1.4rem', marginTop: '1rem', display: 'flex', gap: '12px' }}>
-                            <HelpCircle color="var(--secondary)" /> {question.question}
+                <div className="glass-card p-10">
+                    <div className="mb-10">
+                        <span className="px-3 py-1 bg-secondary/20 text-secondary text-[10px] font-black uppercase tracking-widest rounded-md border border-secondary/20">
+                            {selectedCourse.title}
+                        </span>
+                        <h3 className="text-2xl mt-6 flex items-start gap-4">
+                            <HelpCircle className="text-secondary mt-1 shrink-0" size={24} />
+                            <span className="leading-snug">{question.question}</span>
                         </h3>
                     </div>
 
-                    <div style={{ display: 'grid', gap: '1rem' }}>
+                    <div className="grid grid-cols-1 gap-4">
                         {question.options.map((option, index) => {
-                            let statusClass = '';
+                            let statusClass = 'border-white/10 bg-white/3 hover:bg-white/5 hover:border-white/20';
                             if (isSubmitted) {
-                                if (index === question.answer) statusClass = 'correct';
-                                else if (index === selectedOption) statusClass = 'incorrect';
+                                if (index === question.answer) statusClass = 'border-primary bg-primary/10 text-primary';
+                                else if (index === selectedOption) statusClass = 'border-accent-red bg-accent-red/10 text-accent-red';
+                                else statusClass = 'border-white/5 bg-white/2 opacity-30';
                             } else if (selectedOption === index) {
-                                statusClass = 'selected';
+                                statusClass = 'border-secondary bg-secondary/10 text-secondary ring-1 ring-secondary/50';
                             }
 
                             return (
                                 <div
                                     key={index}
-                                    className={`quiz-option ${statusClass}`}
+                                    className={`p-5 rounded-2xl border cursor-pointer transition-all duration-300 flex justify-between items-center group ${statusClass}`}
                                     onClick={() => handleOptionSelect(index)}
-                                    style={{
-                                        padding: '1.2rem',
-                                        borderRadius: '12px',
-                                        background: 'rgba(255,255,255,0.03)',
-                                        border: '1px solid var(--card-border)',
-                                        cursor: isSubmitted ? 'default' : 'pointer',
-                                        transition: 'all 0.2s ease',
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        borderColor: statusClass === 'selected' ? 'var(--secondary)' :
-                                            statusClass === 'correct' ? 'var(--accent-green)' :
-                                                statusClass === 'incorrect' ? 'var(--accent-red)' : 'var(--card-border)'
-                                    }}
                                 >
-                                    {option}
-                                    {statusClass === 'correct' && <CheckCircle2 size={18} color="var(--accent-green)" />}
-                                    {statusClass === 'incorrect' && <XCircle size={18} color="var(--accent-red)" />}
+                                    <span className="font-medium">{option}</span>
+                                    {isSubmitted && index === question.answer && <CheckCircle2 size={18} />}
+                                    {isSubmitted && index === selectedOption && index !== question.answer && <XCircle size={18} />}
                                 </div>
                             );
                         })}
                     </div>
 
                     {isSubmitted && (
-                        <div style={{ marginTop: '2rem', padding: '1.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', borderLeft: '4px solid var(--secondary)' }}>
-                            <h4 style={{ color: 'var(--secondary)', marginBottom: '0.5rem' }}>AI Insight</h4>
-                            <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)' }}>{question.explanation}</p>
+                        <div className="mt-8 p-6 bg-indigo-500/5 rounded-2xl border-l-4 border-indigo-500 flex gap-4">
+                            <Brain className="text-indigo-400 shrink-0" size={24} />
+                            <div>
+                                <h4 className="text-indigo-400 text-xs font-black uppercase tracking-widest mb-1">Expert Insight</h4>
+                                <p className="text-sm text-white/70 leading-relaxed">{question.explanation}</p>
+                            </div>
                         </div>
                     )}
 
-                    <div style={{ marginTop: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Question {currentQuestion + 1} of {currentQuizData.length}</p>
+                    <div className="mt-12 pt-8 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-6">
+                        <div className="flex flex-col gap-1">
+                            <div className="flex gap-1">
+                                {currentQuizData.map((_, i) => (
+                                    <div key={i} className={`h-1.5 rounded-full transition-all duration-500 ${i === currentQuestion ? 'w-8 bg-primary' : i < currentQuestion ? 'w-3 bg-primary/40' : 'w-3 bg-white/10'}`} />
+                                ))}
+                            </div>
+                            <p className="text-[10px] font-black text-white/20 uppercase tracking-widest mt-2 text-center sm:text-left">
+                                Processing Step {currentQuestion + 1} of {currentQuizData.length}
+                            </p>
+                        </div>
+
                         {!isSubmitted ? (
-                            <button className="btn-primary" onClick={handleSubmitQuiz} disabled={selectedOption === null}>
-                                Check Answer
+                            <button className="btn-primary px-10 py-4 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleSubmitQuiz} disabled={selectedOption === null}>
+                                ANALYZE ANSWER
                             </button>
                         ) : (
-                            <button className="btn-primary" onClick={handleNextQuestion} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                {currentQuestion + 1 === currentQuizData.length ? 'See Results' : 'Next Question'} <ArrowRight size={20} />
+                            <button className="btn-primary px-10 py-4 flex items-center gap-2" onClick={handleNextQuestion}>
+                                {currentQuestion + 1 === currentQuizData.length ? 'FINALIZE ASSESSMENT' : 'NEXT COMPUTATION'} <ArrowRight size={18} />
                             </button>
                         )}
                     </div>
@@ -286,7 +283,7 @@ const LearningCenter = () => {
     }
 
     return (
-        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <div className="max-w-6xl mx-auto px-4 py-8">
             {view === 'courses' && <CourseList />}
             {view === 'details' && <CourseDetails />}
             {view === 'quiz' && <QuizMode />}

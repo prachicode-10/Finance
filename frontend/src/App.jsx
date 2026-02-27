@@ -11,7 +11,7 @@ import LandingPage from './pages/LandingPage';
 import VideoLibrary from './pages/VideoLibrary';
 
 import Auth from './pages/Auth';
-import { USER_PORTFOLIOS } from './data/mockData';
+import { USER_PORTFOLIOS, USER_PORTFOLIO_STATS } from './data/mockData';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -24,18 +24,47 @@ function App() {
     if (!userObj) return null;
     const username = userObj.username || userObj;
     let base = USER_PORTFOLIOS[username];
+
+    // Look up stats for this user ID
+    const stats = USER_PORTFOLIO_STATS.find(s => s.id === userObj.id || s.username === username);
+
     if (!base) {
       // fallback recreation of dynamic portfolio from Dashboard logic
       const hash = username.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      const baseline = USER_PORTFOLIOS[userObj.role] || USER_PORTFOLIOS['Default'];
+      const roleBase = USER_PORTFOLIOS[userObj.role] || USER_PORTFOLIOS['Default'];
       const balanceVariance = (hash * 137) % 15000;
       const pnlVariance = ((hash * 7) % 80) / 10 - 4;
+
       base = {
-        ...baseline,
-        totalBalance: baseline.totalBalance + balanceVariance,
-        pnlPercentage: Number((baseline.pnlPercentage + pnlVariance).toFixed(1)),
+        ...roleBase,
+        totalBalance: roleBase.totalBalance + balanceVariance,
+        pnlPercentage: Number((roleBase.pnlPercentage + pnlVariance).toFixed(1)),
       };
     }
+
+    // Merge stat-specific data if found
+    if (stats) {
+      base = {
+        ...base,
+        investedMoney: stats.invested_money,
+        spentOnStocks: stats.spent_on_stocks,
+        pnl: stats.gains_loss,
+        personality: stats.personality || (userObj.role === 'admin' ? 'Risk Taker' : 'Balanced'),
+        totalBalance: stats.invested_money + stats.gains_loss
+      };
+
+      if (base.investedMoney > 0) {
+        base.pnlPercentage = Number((base.pnl / base.investedMoney * 100).toFixed(1));
+      }
+    } else {
+      // DEFAULT MONEY = 53000
+      base.investedMoney = 53000;
+      base.pnl = base.pnl || 0;
+      base.totalBalance = 53000 + base.pnl;
+      base.spentOnStocks = base.spentOnStocks || (base.assets ? base.assets.reduce((acc, a) => acc + (a.symbol !== 'CASH' ? a.shares * a.avgPrice : 0), 0) : 0);
+      base.personality = base.personality || (userObj.role === 'admin' ? 'Risk Taker' : 'Balanced');
+    }
+
     setPortfolio(base);
     return base;
   };
