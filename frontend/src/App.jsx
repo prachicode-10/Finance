@@ -84,7 +84,7 @@ function App() {
       case 'portfolio':
         return <PortfolioAnalyzer user={user} portfolio={portfolio} setPortfolio={setPortfolio} />;
       case 'advisor':
-        return <AIFinancialAdvisor />;
+        return <AIFinancialAdvisor user={user} portfolio={portfolio} />;
       default:
         return <Dashboard />;
     }

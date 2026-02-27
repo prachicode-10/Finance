@@ -4,7 +4,7 @@ import { AIService } from '../services/aiService';
 import { STOCK_SENTIMENTS, MOCK_STOCKS } from '../data/mockData';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://127.0.0.1:5001';
+const API_BASE_URL = 'http://localhost:5001';
 
 const MarketSentiment = () => {
     const [selectedStock, setSelectedStock] = useState(STOCK_SENTIMENTS[0]);
@@ -12,25 +12,38 @@ const MarketSentiment = () => {
     const [newsResults, setNewsResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const [useRealNews, setUseRealNews] = useState(false);
+    const [error, setError] = useState(null);
+
+    React.useEffect(() => {
+        handleStockSelect(STOCK_SENTIMENTS[0]);
+    }, []);
 
     const handleStockSelect = async (stock) => {
         setSelectedStock(stock);
         setNewsResults([]);
         setUseRealNews(false);
-        
+
         // Optionally fetch real news for this stock
+        setLoading(true);
+        setError(null);
         try {
             const response = await axios.get(`${API_BASE_URL}/news/${stock.symbol}`);
-            const apiNews = response.data.slice(0, 5);
-            
+            const apiNews = Array.isArray(response.data) ? response.data.slice(0, 5) : [];
+
+            if (apiNews.length === 0) {
+                // Backend returned empty or error handled as empty
+                setLoading(false);
+                return;
+            }
+
             const realNews = await Promise.all(apiNews.map(async (item, index) => {
                 let score = 0;
                 let impact = `Analyzing market implications...`;
                 try {
                     const sentimentResponse = await axios.get(`${API_BASE_URL}/analyze/${encodeURIComponent(item.title)}`);
                     score = sentimentResponse.data.score;
-                    impact = sentimentResponse.data.sentiment === "Positive" ? "Positive outlook indicated." : 
-                             sentimentResponse.data.sentiment === "Negative" ? "Caution advised." : "Neutral impact expected.";
+                    impact = sentimentResponse.data.sentiment === "Positive" ? "Positive outlook indicated." :
+                        sentimentResponse.data.sentiment === "Negative" ? "Caution advised." : "Neutral impact expected.";
                 } catch (err) {
                     console.error("Error analyzing news sentiment", err);
                 }
@@ -44,13 +57,16 @@ const MarketSentiment = () => {
                     impact: impact
                 };
             }));
-            
+
             if (realNews.length > 0) {
                 setNewsResults(realNews);
                 setUseRealNews(true);
             }
         } catch (error) {
             console.error("Error fetching news:", error);
+            setError("Could not connect to live news feed. Displaying regional analysis.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -100,6 +116,28 @@ const MarketSentiment = () => {
                     </div>
                     <button type="submit" className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <Search size={18} /> Search
+                    </button>
+                    <button
+                        type="button"
+                        onClick={async () => {
+                            try {
+                                const res = await axios.get(`${API_BASE_URL}/api/health`);
+                                alert(`Backend Status: ${res.data.status}\nMessage: ${res.data.service}`);
+                            } catch (err) {
+                                alert(`Connection Failed: ${err.message}`);
+                            }
+                        }}
+                        style={{
+                            padding: '0.6rem 1rem',
+                            background: 'rgba(255,255,255,0.05)',
+                            border: '1px solid var(--card-border)',
+                            borderRadius: '8px',
+                            color: 'var(--text-muted)',
+                            fontSize: '0.8rem',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Check Connection
                     </button>
                 </form>
             </header>
@@ -306,9 +344,23 @@ const MarketSentiment = () => {
                                 </>
                             )}
 
-                            {!useRealNews && (
+                            {!useRealNews && !loading && (
                                 <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
-                                    <p style={{ fontSize: '0.95rem' }}>Real-time news data will appear here. Make sure your Flask backend is running.</p>
+                                    {error ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                                            <AlertCircle color="var(--accent-red)" />
+                                            <p style={{ fontSize: '0.95rem' }}>{error}</p>
+                                        </div>
+                                    ) : (
+                                        <p style={{ fontSize: '0.95rem' }}>No news articles found for {selectedStock.symbol}. Ensure the Flask backend is healthy.</p>
+                                    )}
+                                </div>
+                            )}
+
+                            {loading && (
+                                <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+                                    <Loader2 className="animate-spin" size={32} style={{ margin: '0 auto 1rem auto' }} />
+                                    <p>AI is scouring market sources...</p>
                                 </div>
                             )}
                         </>
