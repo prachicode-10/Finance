@@ -81,7 +81,13 @@ const AIFinancialAdvisor = () => {
                                 border: '1px solid var(--card-border)',
                                 borderTopRightRadius: msg.role === 'user' ? '4px' : '16px',
                                 borderTopLeftRadius: msg.role === 'user' ? '16px' : '4px',
+                                position: 'relative'
                             }}>
+                                {msg.role === 'assistant' && (
+                                    <div style={{ position: 'absolute', top: '-10px', right: '10px', background: 'var(--primary)', padding: '2px 8px', borderRadius: '10px', fontSize: '10px', color: 'white', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                        <Sparkles size={10} /> AI INSIGHT
+                                    </div>
+                                )}
                                 {msg.content}
                             </div>
                         </div>

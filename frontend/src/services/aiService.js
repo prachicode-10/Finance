@@ -1,9 +1,11 @@
 import { MOCK_STOCKS, MOCK_NEWS, PORTFOLIO_DATA } from '../data/mockData';
+import { ADVISOR_KNOWLEDGE_BASE } from '../data/advisorDataset';
 import axios from 'axios';
 
 const API_BASE_URL = 'http://127.0.0.1:5001';
 
 export const AIService = {
+    // ... (keep getSentimentAnalysis as is)
     getSentimentAnalysis: async (newsList = []) => {
         if (!newsList || newsList.length === 0) {
             return {
@@ -16,8 +18,6 @@ export const AIService = {
         let totalScore = 0;
         let analyzedCount = 0;
 
-        // Note: In a real app we might want a batch endpoint to avoid rate limits
-        // For now, we'll analyze the titles of the top 3 news items
         const itemsToAnalyze = newsList.slice(0, 3);
 
         for (const item of itemsToAnalyze) {
@@ -40,32 +40,49 @@ export const AIService = {
         };
     },
 
-    getAdvisorResponse: async (query, userContext = {}) => {
+    getAdvisorResponse: async (query) => {
         const lowerQuery = query.toLowerCase();
 
-        if (lowerQuery.includes('portfolio') || lowerQuery.includes('my assets')) {
+        // 1. Check for specific dynamic data triggers first
+        if (lowerQuery.includes('portfolio') || lowerQuery.includes('my assets') || lowerQuery.includes('balance')) {
             const topAsset = PORTFOLIO_DATA.assets.sort((a, b) => b.allocation - a.allocation)[0];
             return `Your portfolio is looking strong with a total balance of $${PORTFOLIO_DATA.totalBalance.toLocaleString()}. Your largest allocation is in ${topAsset.symbol} (${topAsset.allocation}%). I suggest diversifying more if you want to reduce risk.`;
         }
 
-        if (lowerQuery.includes('prediction') || lowerQuery.includes('should i buy')) {
-            return `Based on my current sentiment analysis, I'd suggest reviewing the latest market trends. Predicting exact movements is difficult, but keeping an eye on positive sentiment sectors like AI is usually a good strategy.`;
+        // 2. Search knowledge base for matches
+        let bestMatch = null;
+        let maxKeywords = 0;
+
+        for (const category in ADVISOR_KNOWLEDGE_BASE) {
+            if (category === 'fallback') continue;
+
+            const data = ADVISOR_KNOWLEDGE_BASE[category];
+            const matchCount = data.keywords.filter(kw => lowerQuery.includes(kw)).length;
+
+            if (matchCount > maxKeywords) {
+                maxKeywords = matchCount;
+                bestMatch = data.response;
+            }
         }
 
-        // Analyze user query sentiment and reply accordingly
+        if (bestMatch && maxKeywords > 0) {
+            return bestMatch;
+        }
+
+        // 3. Fallback to sentiment-based adaptive reply
         try {
             const response = await axios.get(`${API_BASE_URL}/analyze/${encodeURIComponent(query)}`);
             const sentiment = response.data.sentiment;
             if (sentiment === "Negative") {
-                return "I hear the concern. The market can be volatile, but keeping a long-term perspective is key. Can I help analyze a specific stock you are worried about?";
+                return "I detect some concern in your query. The market's complexity can be daunting, but I'm here to clarify. Would you like to analyze a specific asset or review your diversification strategy?";
             } else if (sentiment === "Positive") {
-                return "That sounds great! Market optimism is good, but always remember to manage your risks properly. Is there a specific stock you're looking to invest in?";
+                return "I love the mathematical optimism! A positive outlook is great for long-term growth. Is there a specific project feature or investment symbol you'd like me to explain next?";
             }
         } catch (error) {
             console.error("AI Advisor error:", error);
         }
 
-        return "I'm your AI Financial Advisor. You can ask me about your portfolio, market sentiment, or specific stock predictions. How can I help you today?";
+        return ADVISOR_KNOWLEDGE_BASE.fallback.response;
     },
 
     simulateStockPrediction: (symbol, userPrediction) => {
