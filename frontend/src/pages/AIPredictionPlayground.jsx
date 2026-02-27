@@ -11,6 +11,7 @@ const AIPredictionPlayground = () => {
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(false);
     const [externalData, setExternalData] = useState(null);
+    const [history, setHistory] = useState([]);
 
     // Fetch external model data from the playground repo
     useEffect(() => {
@@ -59,6 +60,17 @@ const AIPredictionPlayground = () => {
                 userPrediction,
                 isHighError: intuitionError > 2.0 // Error threshold for a "warning"
             });
+            // record this run in history (numeric values)
+            setHistory(prev => [
+                ...prev,
+                {
+                    ts: Date.now(),
+                    userPrediction: parseFloat(userPrediction),
+                    aiPrediction: parseFloat(modelVal),
+                    realResult: parseFloat(predictionResult.realResult),
+                    precisionScore: parseInt(precisionScore, 10)
+                }
+            ]);
             setLoading(false);
         }, 800);
     };
@@ -110,6 +122,24 @@ const AIPredictionPlayground = () => {
         tooltip: { theme: 'dark' }
     };
 
+    // Histogram helper: create bins from history.realResult values
+    const getHistogramData = (runs) => {
+        if (!runs || runs.length === 0) return [];
+        const vals = runs.map(r => Number(r.realResult));
+        const min = Math.min(...vals);
+        const max = Math.max(...vals);
+        const bins = 8;
+        const width = (max - min) / bins || 1;
+        const out = [];
+        for (let i = 0; i < bins; i++) {
+            const low = min + i * width;
+            const high = low + width;
+            const count = vals.filter(v => v >= low && v < high).length;
+            out.push({ bin: `${low.toFixed(2)}-${high.toFixed(2)}`, count });
+        }
+        return out;
+    };
+
     return (
         <div className="prediction-playground">
             <header style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -118,7 +148,7 @@ const AIPredictionPlayground = () => {
                     <p style={{ color: 'var(--text-muted)' }}>Validate your intuition against Mathematical AI Models.</p>
                 </div>
                 <div style={{ display: 'flex', gap: '8px', color: 'var(--secondary)', fontSize: '0.8rem', background: 'rgba(99, 102, 241, 0.1)', padding: '6px 12px', borderRadius: '20px', border: '1px solid var(--secondary)' }}>
-                    <LinkIcon size={14} /> Linked to: PratikRanjan4/playground
+                    <LinkIcon size={14} /> 
                 </div>
             </header>
 
@@ -231,6 +261,40 @@ const AIPredictionPlayground = () => {
                     </p>
                     <div style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.05)' }}>
                         <Chart options={candleOptions} series={getCandleData()} type="candlestick" height={350} />
+                    </div>
+                </div>
+            )}
+            {result && history.length > 0 && (
+                <div className="glass-card" style={{ marginTop: '1.5rem', padding: '1rem' }}>
+                    <h3 style={{ marginBottom: '1rem' }}>Prediction Outcomes — Histogram & Scatter</h3>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                        {/* Histogram of real results from history */}
+                        <div style={{ height: 300, padding: '0.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: 8 }}>
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={getHistogramData(history)}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" />
+                                    <XAxis dataKey="bin" stroke="#888" />
+                                    <YAxis stroke="#888" />
+                                    <Tooltip />
+                                    <Bar dataKey="count" fill="var(--primary)" />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+
+                        {/* Scatter: userPrediction vs aiPrediction */}
+                        <div style={{ height: 300, padding: '0.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: 8 }}>
+                            <ResponsiveContainer width="100%" height="100%">
+                                <ScatterChart>
+                                    <CartesianGrid stroke="rgba(255,255,255,0.03)" />
+                                    <XAxis type="number" dataKey="userPrediction" name="User" unit="%" stroke="#888" />
+                                    <YAxis type="number" dataKey="aiPrediction" name="Model" unit="%" stroke="#888" />
+                                    <ZAxis dataKey="precisionScore" range={[60, 400]} name="Precision" />
+                                    <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+                                    <Legend />
+                                    <Scatter name="Runs" data={history} fill="var(--secondary)" />
+                                </ScatterChart>
+                            </ResponsiveContainer>
+                        </div>
                     </div>
                 </div>
             )}
