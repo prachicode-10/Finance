@@ -4,6 +4,7 @@ import { MOCK_STOCKS } from '../data/mockData';
 import { AIService } from '../services/aiService';
 import axios from 'axios';
 import Chart from 'react-apexcharts';
+import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar, ScatterChart, ZAxis, Legend, Scatter } from 'recharts';
 
 const AIPredictionPlayground = () => {
     const [selectedStock, setSelectedStock] = useState(MOCK_STOCKS[0]);
