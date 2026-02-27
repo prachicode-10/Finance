@@ -37,7 +37,6 @@ const Auth = ({ onLogin }) => {
 
                 if (mockUser) {
                     console.warn("Backend unreachable, using mock credentials");
-                    // shape object same as backend response
                     onLogin({
                         id: mockUser.id,
                         username: mockUser.username,
@@ -45,7 +44,17 @@ const Auth = ({ onLogin }) => {
                         tasks: mockUser.tasks.map((t, i) => ({ id: i + 100, title: t.title || t, status: t.status || 'pending' }))
                     });
                 } else {
-                    setError("Could not connect to the authentication server.");
+                    // Dynamic/Flexible login fallback: Allow any credentials if no mock match found
+                    console.warn("Backend unreachable and no mock match, using dynamic login");
+                    onLogin({
+                        id: Math.floor(Math.random() * 10000),
+                        username: name,
+                        role: 'employee',
+                        tasks: [
+                            { id: 101, title: 'Explore the platform', status: 'pending' },
+                            { id: 102, title: 'Check market trends', status: 'pending' }
+                        ]
+                    });
                 }
             }
         } else {

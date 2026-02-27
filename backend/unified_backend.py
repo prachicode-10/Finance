@@ -156,7 +156,19 @@ def api_login():
         }
         return jsonify({"success": True, "user": response_user}), 200
     else:
-        return jsonify({"error": "Invalid username or password"}), 401
+        # Dynamic login: if user not found, create a placeholder session user
+        # This allows any credentials to work as requested
+        import random
+        dynamic_user = {
+            "id": random.randint(1000, 9999),
+            "username": username,
+            "role": "employee",
+            "tasks": [
+                {"id": 1001, "title": "Explore Dashboard", "status": "pending"},
+                {"id": 1002, "title": "Check Market Sentiment", "status": "pending"}
+            ]
+        }
+        return jsonify({"success": True, "user": dynamic_user}), 200
 
 if __name__ == "__main__":
     print("------------------------------------------")
