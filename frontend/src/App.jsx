@@ -8,6 +8,7 @@ import MarketSentiment from './pages/MarketSentiment';
 import PortfolioAnalyzer from './pages/PortfolioAnalyzer';
 import AIFinancialAdvisor from './pages/AIFinancialAdvisor';
 import LandingPage from './pages/LandingPage';
+import VideoLibrary from './pages/VideoLibrary';
 
 import Auth from './pages/Auth';
 import { USER_PORTFOLIOS } from './data/mockData';
@@ -45,6 +46,8 @@ function App() {
         return <Dashboard user={user} portfolio={portfolio} onNavigate={setActiveTab} />;
       case 'learning':
         return <LearningCenter />;
+      case 'videos':
+        return <VideoLibrary />;
       case 'prediction':
         return <AIPredictionPlayground />;
       case 'news':

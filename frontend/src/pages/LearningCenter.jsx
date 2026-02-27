@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
     CheckCircle2, XCircle, HelpCircle, ArrowRight, RotateCcw,
-    BookOpen, TrendingUp, Brain, PlayCircle, ArrowLeft, Video
+    BookOpen, TrendingUp, Brain, PlayCircle, ArrowLeft, Video, ExternalLink, Download
 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { QUIZ_DATA, COURSES_DATA } from '../data/mockData';
@@ -114,13 +114,21 @@ const LearningCenter = () => {
 
                             {module.videoUrl && (
                                 <div className="video-section" style={{ marginTop: '1.5rem', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--card-border)' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 15px', background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid var(--card-border)' }}>
-                                        <Video size={16} color="var(--primary)" />
-                                        <span style={{ fontSize: '0.85rem', fontWeight: '600' }}>Video Explanation</span>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', padding: '12px 15px', background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid var(--card-border)' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <Video size={16} color="var(--primary)" />
+                                            <span style={{ fontSize: '0.85rem', fontWeight: '600' }}>Video Explanation</span>
+                                            {module.videoType === 'ai' && (
+                                                <span style={{ fontSize: '0.7rem', fontWeight: '700', padding: '2px 8px', background: 'rgba(0, 255, 163, 0.15)', color: 'var(--accent-green)', borderRadius: '4px', textTransform: 'uppercase' }}>AI Generated</span>
+                                            )}
+                                        </div>
+                                        <a href={module.videoUrl.replace('/embed/', '/watch?v=')} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', color: 'var(--primary)', cursor: 'pointer', textDecoration: 'none' }}>
+                                            <ExternalLink size={14} /> Watch on YouTube
+                                        </a>
                                     </div>
-                                    <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
+                                    <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, background: '#000' }}>
                                         <iframe
-                                            src={`${module.videoUrl}?origin=${window.location.origin}`}
+                                            src={`${module.videoUrl}?origin=${window.location.origin}&rel=0&modestbranding=1`}
                                             title={module.title}
                                             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
                                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

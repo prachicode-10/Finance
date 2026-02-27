@@ -7,13 +7,15 @@ import {
     PieChart,
     MessageSquare,
     Settings,
-    LogOut
+    LogOut,
+    Play
 } from 'lucide-react';
 
 const Sidebar = ({ activeTab, setActiveTab, onLogout }) => {
     const menuItems = [
         { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
         { id: 'learning', label: 'Learning Center', icon: <GraduationCap size={20} /> },
+        { id: 'videos', label: 'Video Library', icon: <Play size={20} /> },
         { id: 'prediction', label: 'AI Playground', icon: <TrendingUp size={20} /> },
         { id: 'news', label: 'Market Sentiment', icon: <Newspaper size={20} /> },
         { id: 'portfolio', label: 'Portfolio', icon: <PieChart size={20} /> },
