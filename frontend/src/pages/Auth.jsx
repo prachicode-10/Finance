@@ -29,7 +29,24 @@ const Auth = ({ onLogin }) => {
                 }
             } catch (err) {
                 console.error("Login error:", err);
-                setError("Could not connect to the authentication server.");
+
+                // fall back to client-side mock auth if backend isn't reachable
+                const mockUser = USER_ACCOUNTS.find(
+                    u => (u.username === name || u.email === name) && u.password === password
+                );
+
+                if (mockUser) {
+                    console.warn("Backend unreachable, using mock credentials");
+                    // shape object same as backend response
+                    onLogin({
+                        id: mockUser.id,
+                        username: mockUser.username,
+                        role: mockUser.role,
+                        tasks: mockUser.tasks.map((t, i) => ({ id: i + 100, title: t.title || t, status: t.status || 'pending' }))
+                    });
+                } else {
+                    setError("Could not connect to the authentication server.");
+                }
             }
         } else {
             setError('Please enter both username and password');
