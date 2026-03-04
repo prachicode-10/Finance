@@ -2,7 +2,7 @@ import { MOCK_STOCKS, MOCK_NEWS, PORTFOLIO_DATA } from '../data/mockData';
 import { ADVISOR_KNOWLEDGE_BASE, FALLBACK_ANSWERS } from '../data/advisorDataset';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5001';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 export const AIService = {
     // ... (keep getSentimentAnalysis as is)

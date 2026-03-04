@@ -3,8 +3,10 @@ from flask_cors import CORS
 import requests
 from textblob import TextBlob
 
+import os
+
 app = Flask(__name__)
-# Permit all origins for local development and debugging
+# Permit specific origins in production, or keep open if requested for versatility
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 @app.route("/api/health")
@@ -12,7 +14,7 @@ def health_check():
     return jsonify({"status": "healthy", "service": "FinLearn AI Backend"}), 200
 
 # Configuration
-NEWS_API_KEY = '6eb1c50ac0ee4516a1fe72fa46ce8783'
+NEWS_API_KEY = os.environ.get('NEWS_API_KEY', '6eb1c50ac0ee4516a1fe72fa46ce8783')
 
 # --- Mock Database ---
 USER_DATA = [
