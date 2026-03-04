@@ -1,5 +1,8 @@
 # AI Finance Education & Investment Intelligence System
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/prachicode-10/Finance)
+[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/prachicode-10/Finance&env=VITE_API_URL&project-name=finlearn-frontend&repository-name=Finance)
+
 A premium, production-ready financial intelligence platform built with React. This system provides users with real-time market insights, AI-driven advisory, and educational tools to master investment strategies.
 
 ## ✨ Features
