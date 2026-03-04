@@ -14,7 +14,8 @@ const Auth = ({ onLogin }) => {
 
         if (name && password) {
             try {
-                const response = await fetch('http://localhost:5001/api/login', {
+                const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+                const response = await fetch(`${API_BASE_URL}/api/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username: name, password })
