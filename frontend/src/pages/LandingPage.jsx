@@ -74,6 +74,7 @@ const LandingPage = ({ onStart }) => {
 
             <footer className="landing-footer">
                 <p>&copy; 2026 AI Finance Education & Investment Intelligence System. All rights reserved.</p>
+                <p>Made by Prachi sharma</p>
             </footer>
         </div>
     );
